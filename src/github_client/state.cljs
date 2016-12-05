@@ -1,0 +1,35 @@
+(ns github-client.state
+  (:require
+    [github-client.db :as db]
+    [hoplon.core :as h]
+    [javelin.datascript]
+    [javelin.core :as j :refer [cell] :refer-macros [cell= defc defc=]]
+    [sugar.local-storage]))
+
+(def schema
+  "Schema for the central state storage"
+  {:app/id {:db/unique :db.unique/identity}
+   :user/id {:db/unique :db.unique/identity}
+   :form/id {:db/unique :db.unique/identity}
+   :form/error {:db/unique :db.unique/identity}})
+
+(defonce db (javelin.datascript/create-conn schema))
+
+(defc= title
+  (:page/title (db/get-app db)))
+
+(defn start-sync-title
+  []
+  (h/do-watch title
+    (fn [old new]
+      (set! (.-title js/document) new))))
+
+(defn restore-and-watch-db
+  []
+  (some->> (sugar.local-storage/get :db-backup)
+             db/deserialize-transit
+             (reset! db))
+  (h/do-watch db
+      (fn [old new]
+        (when new
+          (sugar.local-storage/set! :db-backup (db/serialize-transit new))))))
