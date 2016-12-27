@@ -5,26 +5,27 @@
     [github-client.reducer :refer [dispatch]]
     [hoplon.core :as h :refer [defelem case-tpl cond-tpl for-tpl if-tpl when-tpl]]
     [hoplon.spectre-css :as s]
+    [sugar.json-html]
+    [sugar.safe :as safe]
     [javelin.core :as j :refer [cell] :refer-macros [cell= defc defc=]]))
 
 (defn show
   [{:keys [route db queue]}]
-  (let [app (cell= (db/get-app db))
-        urls (cell= (:app/url app))
+  (let [urls (cell= (:app/url (db/get-app db)))
         url-id (cell= (keyword (:url-id route)))
-        url (cell= (when url-id (url-id urls)))
-        placeholders (cell= (when url (re-seq #"\{.*?\}" url)))
+        url (cell= (get urls url-id))
+        placeholders (cell= (safe/re-seq #"\{.*?\}" url))
         raw? (cell true)]
     (h/div
       (h/h3 (h/text "~{url-id}"))
       (h/h4 (h/text "~{url}"))
       (h/form
         (for-tpl [[idx ph] (cell= (map-indexed (fn [idx item] [idx item]) placeholders))]
-          (let [id (cell= (if url-id (keyword (:url-id route) (str idx)) :not-found))]
+          (let [id (cell= (safe/keyword (:url-id route) (str idx)))]
             (s/form-group
               (s/form-label (h/text "~{ph}"))
               (s/input
-                :value (cell= (when-not (= id :not-found) (id (db/get-form db ::exploration))))
+                :value (cell= (get (db/get-form db ::exploration) (or id :not-found)))
                 :change (fn [e]
                           (dispatch queue [:store-form-field [::exploration @id @e]]))
                 :keypress (fn [e]
@@ -51,6 +52,6 @@
       (if-tpl raw?
         (h/div
           (h/pre
-            (h/text "~(when url-id (with-out-str (pprint/pprint (url-id (db/get-app* db :exploration)))))")))
+            (h/text "~(with-out-str (pprint/pprint (get (db/get-app* db :exploration) (or url-id :not-found))))")))
         (h/div
-          (cell= (when url-id (sugar.json-html/render (url-id (db/get-app* db :exploration))))))))))
+          (cell= (sugar.json-html/render (get (db/get-app* db :exploration) (or url-id :not-found)))))))))

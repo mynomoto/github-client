@@ -37,7 +37,7 @@
    (d/transact! db [{:form/error id
                      k v}]))
   ([db id k v & kvs]
-   (d/transact! db [(reduce (fn [[acc ok ov]]
+   (d/transact! db [(reduce (fn [acc [ok ov]]
                               (assoc acc ok ov))
                       {:form/error id k v}
                       (partition 2 kvs))])))

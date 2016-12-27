@@ -4,8 +4,8 @@
     [github-client.reducer :refer [dispatch]]
     [github-client.route :as route]
     [github-client.state :as state]
-    [httpurr.client :as http]
     [goog.crypt.base64 :as base64]
+    [httpurr.client :as http]
     [httpurr.client.xhr :refer [client]]
     [httpurr.status :as status]
     [medley.core :as medley]
@@ -43,7 +43,7 @@
   (http/send! client
     (merge-with merge
       (let [user (db/get-user @state/db)]
-        (default-request-map (:user/name user) (:user/token user)))
+        (default-request-map (:user/username user) (:user/token user)))
       (encode-request-body request-map))))
 
 (defn login-request
@@ -52,8 +52,8 @@
   (http/send! client
     (merge-with merge
       (let [form-user (db/get-form @state/db :github-client.page.login/login)
-            user (db/get-user @state/db)]
-        (default-request-map (:user/name form-user (:user/name user)) (:user/token form-user (:user/token user))))
+            user (select-keys (db/get-user @state/db) [:user/username :user/token])]
+        (default-request-map (:user/username form-user (:user/username user)) (:user/token form-user (:user/token user))))
       (encode-request-body request-map))))
 
 (defn process-response
@@ -79,11 +79,13 @@
           (dispatch queue [:update-local-data [:github-client.page.login/login [:user/token :user/username] [:user/id :github-client]]])
           (dispatch queue [:store-app-data [:github-client :app/url body]])
           (let [route (:domkm.silk/name @route)]
+            (console.log :route route)
             (cond
               (#{:login} route) (dispatch queue [:navigate [:index]])
               (#{:profile-edit} route) (dispatch queue [:navigate [:profile]])
               :else nil))))
       (p/catch (fn [err]
+                 (console.log err)
                  (dispatch queue [:store-form-error [:github-client.page.login/login :user/token (-> err :body :message) :user/username (-> err :body :message)]])))))
 
 (defn exploration

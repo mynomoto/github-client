@@ -1,6 +1,8 @@
 (ns github-client.reducer
   (:require
-    [cljs.core.async :as async])
+    [cljs.core.async :as async]
+    [github-client.db :as db]
+    [javelin.core :as j :refer [cell] :refer-macros [cell= defc defc=]])
   (:require-macros
     [cljs.core.async.macros :refer [go go-loop]]))
 
@@ -13,12 +15,13 @@
 
 (defn start!
   [handler db queue]
-  (let [context {:db db :queue queue}]
+  (let [context {:db db :queue queue}
+        route (cell= (:app/route (db/get-app db)))]
     (go-loop []
       (when-let [[key data] (async/<! queue)]
         (when-not (= :stop key)
           (console.log key data)
-          ((key handler handler-not-found) (assoc context :key key) data)
+          ((key handler handler-not-found) (assoc context :key key :route route) data)
           (recur))))))
 
 (defn dispatch
