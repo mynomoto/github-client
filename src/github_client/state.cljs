@@ -4,19 +4,21 @@
     [hoplon.core :as h]
     [javelin.datascript]
     [javelin.core :as j :refer [cell] :refer-macros [cell= defc defc=]]
+    [sugar.datascript.form :as form]
     [sugar.local-storage]))
 
 (def schema
   "Schema for the central state storage"
   {:app/id {:db/unique :db.unique/identity}
    :user/id {:db/unique :db.unique/identity}
-   :form/id {:db/unique :db.unique/identity}
-   :form/error {:db/unique :db.unique/identity}})
+   ::form/value {:db/unique :db.unique/identity}
+   ::form/error {:db/unique :db.unique/identity}
+   ::form/dirty {:db/unique :db.unique/identity}})
 
 (defonce db (javelin.datascript/create-conn schema))
 
 (defc= title
-  (:page/title (db/get-app db)))
+  (:page/title (db/get-app db :github-client)))
 
 (defn start-sync-title
   []

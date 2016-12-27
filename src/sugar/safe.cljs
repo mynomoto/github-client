@@ -8,4 +8,9 @@
 
 (defn keyword
   ([name] (when name (clojure.core/keyword name)))
-  ([ns name] (when (and ns name) (clojure.core/keyword ns name))) )
+  ([ns name]
+   (let [ns (str ns)
+         name (str name)]
+     (when (and (not-empty ns)
+                (not-empty name))
+       (clojure.core/keyword ns name)))) )

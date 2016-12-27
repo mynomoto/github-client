@@ -50,5 +50,6 @@
   ([silk-routes f]
    (update-route-on-hashchange! silk-routes f (fn [_])))
   ([silk-routes f f-error]
-   (-> js/window .-onhashchange (set! (fn [_] (update-route! silk-routes f f-error))))
+   (-> js/window .-onhashchange
+       (set! (fn [_] (update-route! silk-routes f f-error))))
    (update-route! silk-routes f (fn [_] (navigate! silk-routes :index)))))

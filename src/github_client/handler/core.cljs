@@ -3,6 +3,7 @@
     [github-client.db :as db]
     [github-client.route :as route]
     [github-client.reducer :refer [dispatch]]
+    [sugar.datascript.form :as form]
     [github-client.api :as api]))
 
 (def global
@@ -10,26 +11,30 @@
    (fn [{:keys [db queue route]} data]
      (api/login db queue route))
 
-   :reset-form
-   (fn [{:keys [db]} data]
-     (db/reset-form db data))
-
    :update-profile
    (fn [{:keys [queue]} data]
      (dispatch queue [:login-submit])
      (dispatch queue [:navigate [:profile]]))
 
-   :store-form-field
-   (fn [{:keys [db]} [key field value]]
-     (db/store-form-field db key field value))
+   :clear-form-values
+   (fn [{:keys [db]} data]
+     (form/clear-value db data))
 
-   :store-form-error
+   :set-form-field
    (fn [{:keys [db]} [key field value & kvs]]
-     (apply db/store-form-error db key field value kvs))
+     (apply form/set-value db key field value kvs))
+
+   :set-form-error
+   (fn [{:keys [db]} [key field value & kvs]]
+     (apply form/set-error db key field value kvs))
 
    :navigate
    (fn [{:keys [db]} data]
      (apply route/navigate! data))
+
+   :update-route
+   (fn [{:keys [db]} data]
+     (route/update-route db data))
 
    :store-app-data
    (fn [{:keys [db]} [key field value]]

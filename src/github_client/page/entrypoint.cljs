@@ -1,7 +1,6 @@
 (ns github-client.page.entrypoint
   (:require
     [clojure.string :as str]
-    [datascript.core :as d]
     [github-client.db :as db]
     [github-client.api :as api]
     [github-client.reducer :refer [dispatch]]
@@ -13,7 +12,7 @@
 
 (defn show
   [{:keys [route db queue]}]
-  (let [app (cell= (db/get-app db))
+  (let [app (cell= (db/get-app db :github-client))
         urls (cell= (sort-by first (:app/url app)))]
     (h/div
       (h/h3 "Api Entrypoint")

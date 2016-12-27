@@ -16,7 +16,7 @@
     (enable-console-print!)
     (devtools.core/install! [:custom-formatters :hints :async])
     (state/restore-and-watch-db)
-    (route/init! state/db)
+    (route/init! reducer/queue)
     (state/start-sync-title)
     (h/do-watch state/title
       (fn [old new]

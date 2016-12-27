@@ -1,7 +1,7 @@
 (ns github-client.page.login
   (:require
     [clojure.string :as str]
-    [datascript.core :as d]
+    [sugar.datascript.form :as form]
     [github-client.db :as db]
     [github-client.reducer :refer [dispatch]]
     [github-client.route :as route]
@@ -34,14 +34,14 @@
             :toggle (cell= (or edit? login?))
             :css {:width "350px"}
             :type "text"
-            :value (cell= (or (:user/username (db/get-form db ::login))
+            :value (cell= (or (form/value db ::login :user/username)
                             (:user/username user)))
             :change (fn [e]
-                      (dispatch queue [:store-form-field [::login :user/username @e]]))
+                      (dispatch queue [:set-form-field [::login :user/username @e]]))
             :keypress (fn [e]
                         (when (= (sugar.keycodes/to-code :enter)
                                 (sugar.keycodes/event->code e))
-                          (dispatch queue [:store-form-field [::login :user/username @e]])
+                          (dispatch queue [:set-form-field [::login :user/username @e]])
                           (dispatch queue [:update-profile])))
             :placeholder "Username"))
         (s/form-group
@@ -53,14 +53,14 @@
             :toggle (cell= (or edit? login?))
             :css {:width "350px"}
             :type "text"
-            :value (cell= (or (:user/token (db/get-form db ::login))
+            :value (cell= (or (form/value db ::login :user/token)
                             (:user/token user)))
             :change (fn [e]
-                      (dispatch queue [:store-form-field [::login :user/token @e]]))
+                      (dispatch queue [:set-form-field [::login :user/token @e]]))
             :keypress (fn [e]
                         (when (= (sugar.keycodes/to-code :enter)
                                 (sugar.keycodes/event->code e))
-                          (dispatch queue [:store-form-field [::login :user/token @e]])
+                          (dispatch queue [:set-form-field [::login :user/token @e]])
                           (dispatch queue [:update-profile])))
             :placeholder "Token"))
         (s/button-primary
@@ -84,6 +84,6 @@
           :toggle (cell= (and (#{:profile-edit} (:domkm.silk/name route))
                            (not login?)))
           :click (fn [_]
-                   (dispatch queue [:reset-form ::login])
+                   (dispatch queue [:clear-form-values ::login])
                    (dispatch queue [:navigate [:profile]]))
           "Cancel")))))

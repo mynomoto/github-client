@@ -11,11 +11,10 @@
 
 (defn show
   [{:keys [db] :as context}]
-  (let [route (cell= (:app/route (db/get-app db)))
-        context (assoc context :route route)
-        ]
+  (let [route (cell= (:app/route (db/get-app db :github-client)))
+        context (assoc context :route route)]
     (h/div :id "app"
-      (layout/navbar)
+      (layout/navbar context)
       (layout/container
         (cond-tpl
           (cell= (or (#{:login :profile-edit :profile} (:domkm.silk/name route))

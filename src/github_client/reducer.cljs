@@ -16,11 +16,11 @@
 (defn start!
   [handler db queue]
   (let [context {:db db :queue queue}
-        route (cell= (:app/route (db/get-app db)))]
+        route (cell= (:app/route (db/get-app db :github-client)))]
     (go-loop []
-      (when-let [[key data] (async/<! queue)]
+      (when-let [[key data :as event] (async/<! queue)]
         (when-not (= :stop key)
-          (console.log key data)
+          (console.log :event event)
           ((key handler handler-not-found) (assoc context :key key :route route) data)
           (recur))))))
 

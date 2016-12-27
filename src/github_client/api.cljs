@@ -10,6 +10,7 @@
     [httpurr.status :as status]
     [medley.core :as medley]
     [promesa.core :as p]
+    [sugar.datascript.form :as form]
     [sugar.json]))
 
 (def ^:const api-host "https://api.github.com")
@@ -51,8 +52,8 @@
   [request-map]
   (http/send! client
     (merge-with merge
-      (let [form-user (db/get-form @state/db :github-client.page.login/login)
-            user (select-keys (db/get-user @state/db) [:user/username :user/token])]
+      (let [form-user (form/values @state/db :github-client.page.login/login)
+            user (db/get-user @state/db)]
         (default-request-map (:user/username form-user (:user/username user)) (:user/token form-user (:user/token user))))
       (encode-request-body request-map))))
 
@@ -86,7 +87,7 @@
               :else nil))))
       (p/catch (fn [err]
                  (console.log err)
-                 (dispatch queue [:store-form-error [:github-client.page.login/login :user/token (-> err :body :message) :user/username (-> err :body :message)]])))))
+                 (dispatch queue [:set-form-error [:github-client.page.login/login :user/token (-> err :body :message) :user/username (-> err :body :message)]])))))
 
 (defn exploration
   [url-id url db queue]
