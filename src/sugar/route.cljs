@@ -18,7 +18,7 @@
    (try
      (str "#!" (silk/depart silk-routes route-name params))
      (catch js/Error _
-       (js/console.log "Couln't create href for" (name route-name))
+       (console.error :href-failed (name route-name))
        "#!/"))))
 
 (defn navigate!

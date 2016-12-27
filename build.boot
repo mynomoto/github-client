@@ -56,6 +56,7 @@
 
                   ;; util functions
                   [medley "0.8.4"]
+
                   ;; channels
                   [org.clojure/core.async "0.2.395"]]
   :source-paths #{"src"}

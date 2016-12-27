@@ -10,8 +10,10 @@
 
 (defn handler-not-found
   [context data]
-  (console.log (str (:key context) " doesn't have a handler"))
-  (console.log :data data))
+  (console.group)
+  (console.error :handler-not-found)
+  (console.log (:key context) data)
+  (console.groupEnd))
 
 (defn start!
   [handler db queue]

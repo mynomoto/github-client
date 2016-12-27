@@ -66,10 +66,6 @@
       status/unauthorized (p/rejected response)
       (p/rejected response))))
 
-(defn debug [x]
-  (console.log :debug x)
-  x)
-
 (defn login
   [db queue route]
   (-> (p/chain
@@ -80,13 +76,12 @@
           (dispatch queue [:update-local-data [:github-client.page.login/login [:user/token :user/username] [:user/id :github-client]]])
           (dispatch queue [:store-app-data [:github-client :app/url body]])
           (let [route (:domkm.silk/name @route)]
-            (console.log :route route)
             (cond
               (#{:login} route) (dispatch queue [:navigate [:index]])
               (#{:profile-edit} route) (dispatch queue [:navigate [:profile]])
               :else nil))))
       (p/catch (fn [err]
-                 (console.log err)
+                 (console.log :request-failed err)
                  (dispatch queue [:set-form-error [:github-client.page.login/login :user/token (-> err :body :message) :user/username (-> err :body :message)]])))))
 
 (defn exploration

@@ -6,9 +6,6 @@
 (defn value
   [db id k]
   (when (and db id k)
-    (console.log :value-db db)
-    (console.log :value-id id)
-    (console.log :value-k k)
     (get (d/entity db [::value id]) k)))
 
 (defn values
