@@ -11,7 +11,7 @@
 (defn handler-not-found
   [context data]
   (console.group)
-  (console.error :handler-not-found)
+  (console.error ::handler-not-found)
   (console.log (:key context) data)
   (console.groupEnd))
 
@@ -22,8 +22,11 @@
     (go-loop []
       (when-let [[key data :as event] (async/<! queue)]
         (when-not (= :stop key)
-          (console.log :event event)
-          ((key handler handler-not-found) (assoc context :key key :route route) data)
+          (console.log ::event event)
+          (try
+            ((key handler handler-not-found) (assoc context :key key :route route) data)
+            (catch js/Error e
+              (console.error ::handler-error e)))
           (recur))))))
 
 (defn dispatch
@@ -33,4 +36,3 @@
 (defn stop!
   [queue]
   (dispatch queue [:stop]))
-
