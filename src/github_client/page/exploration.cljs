@@ -38,7 +38,10 @@
         (s/form-group
           (s/button-primary
             :click #(dispatch queue [:explore [@url-id @url]])
-            "Explore")))
+            "Explore")
+          (s/button
+            :click #(dispatch queue [:clear-app-data [:exploration @url-id]])
+            "Clear")))
       (when-tpl (cell= (get (db/get-app db :exploration) (or url-id :not-found)))
         (h/div
           (s/tab :options #{:block}

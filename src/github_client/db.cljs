@@ -23,6 +23,12 @@
                       {:app/id id k v}
                       (partition 2 kvs))])))
 
+(defn clear-app-data
+  [db id korks]
+  (if (sequential? korks)
+    (d/transact! db (mapv (fn [k] [:db.fn/retractAttribute [:app/id id] k]) korks))
+    (d/transact! db [[:db.fn/retractAttribute [:app/id id] korks]])))
+
 (defn submit-data
   [db form-id keys lookup-ref]
   (let [form (form/values @db form-id keys)]

@@ -53,6 +53,10 @@
    (fn [{:keys [db]} [key field value]]
      (db/store-app-data db key field value))
 
+   :clear-app-data
+   (fn [{:keys [db]} [key field]]
+     (db/clear-app-data db key field))
+
    :update-local-data
    (fn [{:keys [db]} [form-id keys lookup-ref]]
      (db/submit-data db form-id keys lookup-ref))
