@@ -9,7 +9,6 @@
 (def routes
   (sugar.route/create
     [[:index [[]]]
-     [:login [["login"]]]
      [:contribute [["contribute"]]]
      [:profile [["profile"]]]
      [:profile-edit [["profile" "edit"]]]

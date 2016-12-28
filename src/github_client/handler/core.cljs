@@ -24,7 +24,8 @@
 
    :set-form-field
    (fn [{:keys [db]} [key field value & kvs]]
-     (apply form/set-value db key field value kvs))
+     (apply form/set-value db key field value kvs)
+     (apply form/set-dirty db key field value kvs))
 
    :set-form-error
    (fn [{:keys [db]} [key field value & kvs]]
@@ -33,8 +34,12 @@
    :clear-form-errors
    (fn [{:keys [db]} data]
      (if (coll? data)
-       (apply form/clear-error db data)
-       (form/clear-error db data)))
+       (do
+         (apply form/clear-error db data)
+         (apply form/clear-dirty db data))
+       (do
+         (form/clear-error db data)
+         (form/clear-dirty db data))))
 
    :navigate
    (fn [{:keys [db]} data]

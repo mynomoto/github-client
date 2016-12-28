@@ -11,15 +11,21 @@
     [sugar.keycodes]
     [sugar.local-storage]))
 
+(defn error-label
+  [show? text]
+  (h/p
+    :css {:color "#e85600"}
+    :display show?
+    (h/text "~{text}")))
+
 (defn show
   [{:keys [route db queue]}]
   (let [user (cell= (db/get-user db))
         username (cell= (:user/username user))
         token (cell= (:user/token (db/get-user db)))
-        login? (cell= (or (#{:login} (:domkm.silk/name route))
-                        (str/blank? (:user/token user))
-                        (str/blank? (:user/username user))))
-        edit? (cell= (#{:login :profile-edit} (:domkm.silk/name route)))]
+        login? (cell= (or (str/blank? (:user/token user))
+                          (str/blank? (:user/username user))))
+        edit? (cell= (= :profile-edit (:domkm.silk/name route)))]
     (h/div
       (h/h3 "Login")
       (h/p "You can generate a Github personal access token at "
@@ -45,10 +51,11 @@
                           (dispatch queue [:set-form-field [::login :user/username @e]])
                           (dispatch queue [:update-profile])))
             :placeholder "Username")
-          (h/p
-            :css {:color "#e85600"}
-            :display (cell= (form/error db ::login :user/username))
-            (h/text "~(form/error db ::login :user/username)")))
+          (error-label
+            (cell= (and edit?
+                        (form/error db ::login :user/username)
+                        (form/dirty? db ::login :user/username)))
+            (cell= (form/error db ::login :user/username))))
         (s/form-group
           :options (cell= (if (form/error db ::login :user/token) #{:error} #{}))
           (s/form-label "Personal access token")
@@ -69,10 +76,11 @@
                           (dispatch queue [:set-form-field [::login :user/token @e]])
                           (dispatch queue [:update-profile])))
             :placeholder "Token")
-          (h/p
-            :css {:color "#e85600"}
-            :display (cell= (form/error db ::login :user/token))
-            (h/text "~(form/error db ::login :user/token)")))
+          (error-label
+            (cell= (and edit?
+                        (form/error db ::login :user/token)
+                        (form/dirty? db ::login :user/token)))
+            (cell= (form/error db ::login :user/token))))
         (s/button-primary
           :toggle login?
           :click (fn [_]

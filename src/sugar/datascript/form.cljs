@@ -59,13 +59,23 @@
                       (partition 2 kvs))])))
 
 (defn set-dirty
-  ([db id k v]
+  ([db id k _]
    (d/transact! db [{::dirty id
-                     k v}]))
-  ([db id k v & kvs]
-   (d/transact! db [(reduce (fn [acc [ok ov]]
-                              (assoc acc ok ov))
-                      {::dirty id k v}
+                     k true}]))
+  ([db id k _ & kvs]
+   (d/transact! db [(reduce (fn [acc [ok _]]
+                              (assoc acc ok true))
+                      {::dirty id k true}
+                      (partition 2 kvs))])))
+
+(defn set-pristine
+  ([db id k _]
+   (d/transact! db [{::dirty id
+                     k false}]))
+  ([db id k _ & kvs]
+   (d/transact! db [(reduce (fn [acc [ok _]]
+                              (assoc acc ok false))
+                      {::dirty id k false}
                       (partition 2 kvs))])))
 
 (defn clear-value

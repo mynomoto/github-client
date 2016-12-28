@@ -17,9 +17,9 @@
       (layout/navbar context)
       (layout/container
         (cond-tpl
-          (cell= (or (#{:login :profile-edit :profile} (:domkm.silk/name route))
-                   (str/blank? (:user/token (db/get-user db)))
-                   (str/blank? (:user/username (db/get-user db)))))
+          (cell= (or (#{:profile-edit :profile} (:domkm.silk/name route))
+                     (str/blank? (:user/token (db/get-user db)))
+                     (str/blank? (:user/username (db/get-user db)))))
           (page.login/show context)
 
           (cell= (= :index (:domkm.silk/name route)))
