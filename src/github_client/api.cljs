@@ -76,14 +76,13 @@
           (dispatch queue [:update-local-data [:github-client.page.login/login [:user/token :user/username] [:user/id :github-client]]])
           (dispatch queue [:store-app-data [:github-client :app/url body]])
           (dispatch queue [:clear-form-errors :github-client.page.login/login])
-          (dispatch queue [:clear-form-errors :github-client.page.login/login])
           (let [route (:domkm.silk/name @route)]
             (cond
               (#{:login} route) (dispatch queue [:navigate [:index]])
               (#{:profile-edit} route) (dispatch queue [:navigate [:profile]])
               :else nil))))
       (p/catch (fn [err]
-                 (console.log :request-failed err)
+                 (console.log ::request-failed err)
                  (dispatch queue [:set-form-error [:github-client.page.login/login :user/token (-> err :body :message) :user/username (-> err :body :message)]])))))
 
 (defn exploration
