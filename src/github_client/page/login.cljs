@@ -26,11 +26,12 @@
         (h/a :href "https://github.com/settings/tokens" :target "_blank" "Personal access token") ".")
       (h/form
         (s/form-group
+          :options (cell= (if (form/error db ::login :user/username) #{:error} #{}))
           (s/form-label "Github username")
           (h/p
             :toggle (cell= (and (not edit?) (not login?)))
             (h/text "~(:user/username user)"))
-          (h/input
+          (s/input
             :toggle (cell= (or edit? login?))
             :css {:width "350px"}
             :type "text"
@@ -43,13 +44,18 @@
                                 (sugar.keycodes/event->code e))
                           (dispatch queue [:set-form-field [::login :user/username @e]])
                           (dispatch queue [:update-profile])))
-            :placeholder "Username"))
+            :placeholder "Username")
+          (h/p
+            :css {:color "#e85600"}
+            :display (cell= (form/error db ::login :user/username))
+            (h/text "~(form/error db ::login :user/username)")))
         (s/form-group
+          :options (cell= (if (form/error db ::login :user/token) #{:error} #{}))
           (s/form-label "Personal access token")
           (h/p
             :toggle (cell= (and (not edit?) (not login?)))
             (h/text "~{token}"))
-          (h/input
+          (s/input
             :toggle (cell= (or edit? login?))
             :css {:width "350px"}
             :type "text"
@@ -62,7 +68,11 @@
                                 (sugar.keycodes/event->code e))
                           (dispatch queue [:set-form-field [::login :user/token @e]])
                           (dispatch queue [:update-profile])))
-            :placeholder "Token"))
+            :placeholder "Token")
+          (h/p
+            :css {:color "#e85600"}
+            :display (cell= (form/error db ::login :user/token))
+            (h/text "~(form/error db ::login :user/token)")))
         (s/button-primary
           :toggle login?
           :click (fn [_]

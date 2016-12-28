@@ -18,7 +18,9 @@
 
    :clear-form-values
    (fn [{:keys [db]} data]
-     (form/clear-value db data))
+     (if (coll? data)
+       (apply form/clear-value db data)
+       (form/clear-value db data)))
 
    :set-form-field
    (fn [{:keys [db]} [key field value & kvs]]
@@ -27,6 +29,12 @@
    :set-form-error
    (fn [{:keys [db]} [key field value & kvs]]
      (apply form/set-error db key field value kvs))
+
+   :clear-form-errors
+   (fn [{:keys [db]} data]
+     (if (coll? data)
+       (apply form/clear-error db data)
+       (form/clear-error db data)))
 
    :navigate
    (fn [{:keys [db]} data]
