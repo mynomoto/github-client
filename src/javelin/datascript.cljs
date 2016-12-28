@@ -1,5 +1,5 @@
 (ns javelin.datascript
-  (:refer-clojure :exclude [select-keys])
+  (:refer-clojure :exclude [select-keys pop])
   (:require
     [datascript.core :as datascript]
     [javelin.core :as j]
@@ -29,3 +29,31 @@
   (->> (sugar.util/korks->ks korks)
        (remove nil?)
        (clojure.core/select-keys entity)))
+
+(defn- safe-pop
+  [x]
+  (or (try (clojure.core/pop x) (catch js/Error e)) x))
+
+(defn pop
+  [db eid attr]
+  (let [pop-fn (fn [db eid]
+                 (let [new-vector (safe-pop (ffirst
+                                              (q '{:find [?vector]
+                                                   :in [$ ?eid ?attr]
+                                                   :where [[?eid ?attr ?vector]]}
+                                                db eid attr)))]
+                   [{:db/id eid attr new-vector}]))]
+    (transact! db [[:db.fn/call pop-fn eid]])))
+
+(defn push
+  [db eid attr value]
+  (let [push-fn (fn [db eid]
+                  (let [new-vector ((fnil conj [])
+                                    (ffirst
+                                      (q '{:find [?vector]
+                                           :in [$ ?eid ?attr]
+                                           :where [[?eid ?attr ?vector]]}
+                                        db eid attr))
+                                    value)]
+                    [{:db/id eid attr new-vector}]))]
+    (transact! db [[:db.fn/call push-fn eid]])))

@@ -22,8 +22,8 @@
     (go-loop []
       (when-let [[key data :as event] (async/<! queue)]
         (when-not (= :stop key)
-          (console.log ::event event)
           (try
+            (console.log ::event event)
             ((key handler handler-not-found) (assoc context :key key :route route) data)
             (catch js/Error e
               (console.error ::handler-error e)))
