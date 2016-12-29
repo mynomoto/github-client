@@ -21,13 +21,13 @@
     (h/do-watch state/title
       (fn [old new]
         (set! (.-title js/document) new)))
-    (reducer/start! handler/global state/db reducer/queue state/history)
+    (reducer/start! handler/global state/db reducer/queue state/history state/selected-history)
     (reducer/dispatch reducer/queue [:init])
     ))
 
 (defn init! []
   (reducer/stop! reducer/queue)
-  (reducer/start! handler/global state/db reducer/queue state/history)
-  (js/jQuery #(.replaceWith (js/jQuery "#app") (page/show {:db state/db :queue reducer/queue :history state/history}))))
+  (reducer/start! handler/global state/db reducer/queue state/history state/selected-history)
+  (js/jQuery #(.replaceWith (js/jQuery "#app") (page/show {:db state/db :queue reducer/queue :history state/history :selected-history state/selected-history}))))
 
 (init!)

@@ -53,9 +53,11 @@
   (cljs.reader/read-string conn))
 
 (defn add-db-event
-  [history event db]
-  (conj history {:history-db db :history-event event}))
+  [history event db selected-history]
+  (let [new-history (conj history {:history-db db :history-event event})]
+    (reset! selected-history (dec (count new-history)))
+    new-history))
 
 (defn save-history
-  [history event db]
-  (swap! history add-db-event event db))
+  [history event db selected-history]
+  (swap! history add-db-event event db selected-history))

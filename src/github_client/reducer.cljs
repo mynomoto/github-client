@@ -16,7 +16,7 @@
   (console.groupEnd))
 
 (defn start!
-  [handler db queue history]
+  [handler db queue history selected-history]
   (let [context {:db db :queue queue}
         route (cell= (:app/route (db/get-app db :github-client)))]
     (go-loop []
@@ -25,7 +25,7 @@
           (try
             (console.log ::event event)
             ((key handler handler-not-found) (assoc context :key key :route route) data)
-            (db/save-history history event @db)
+            (db/save-history history event @db selected-history)
             (catch js/Error e
               (console.error ::handler-error e)))
           (recur))))))
