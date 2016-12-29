@@ -6,15 +6,15 @@
 (goog-define test? false)
 (goog-define dev? false)
 
-(defc debug true)
+(defonce debug? (cell true))
 
-(defn debug!
+(defn debug-on!
   []
-  (reset! debug true))
+  (reset! debug? true))
 
-(defn not-debug!
+(defn debug-off!
   []
-  (reset! debug false))
+  (reset! debug? false))
 
-(obj/set js/window "activate_debug" debug!)
-(obj/set js/window "deactivate_debug" not-debug!)
+(obj/set js/window "debug_on" debug-on!)
+(obj/set js/window "debug_off" debug-off!)

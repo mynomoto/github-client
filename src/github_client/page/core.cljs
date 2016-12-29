@@ -19,7 +19,7 @@
     (h/div :id "app"
       (layout/navbar context)
       (layout/container
-        (when-tpl config/debug
+        (when-tpl config/debug?
           (s/columns
             (h/div :column 12
               (page.debug/show context))))

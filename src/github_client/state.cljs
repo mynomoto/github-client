@@ -19,6 +19,8 @@
 
 (defonce history (cell []))
 
+(defonce selected-history (cell nil))
+
 (defc= title
   (:page/title (db/get-app db :github-client)))
 
