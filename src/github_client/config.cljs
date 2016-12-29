@@ -10,7 +10,7 @@
 
 (defn debug-on!
   []
-  (reset! debug? true))
+  (reset! debug? false))
 
 (defn debug-off!
   []
