@@ -51,3 +51,11 @@
 (defn deserialize-edn
   [conn]
   (cljs.reader/read-string conn))
+
+(defn add-db-event
+  [history event db]
+  (conj history {:history-db db :history-event event}))
+
+(defn save-history
+  [history event db]
+  (swap! history add-db-event event db))

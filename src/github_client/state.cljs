@@ -17,6 +17,8 @@
 
 (defonce db (javelin.datascript/create-conn schema))
 
+(defonce history (cell []))
+
 (defc= title
   (:page/title (db/get-app db :github-client)))
 
