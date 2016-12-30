@@ -66,12 +66,21 @@
   '[adzerk.boot-cljs :refer [cljs]]
   '[adzerk.boot-cljs-repl :refer [cljs-repl start-repl]]
   '[adzerk.boot-reload :refer [reload]]
+  '[boot.git :refer [clean? last-commit]]
   '[clojure.java.io :as io]
   '[clojure.string :as str]
   '[confetti.boot-confetti :refer [sync-bucket create-site]]
   '[crisptrutski.boot-cljs-test :refer [test-cljs]]
   '[org.martinklepsch.boot-gzip :refer [gzip]]
   '[tailrecursion.boot-static :refer [serve]])
+
+(defn- last-commit*
+  []
+  (try (subs (last-commit) 0 8) (catch Throwable _)))
+
+(defn- clean?*
+  []
+  (try (clean?) (catch Throwable _)))
 
 (deftask dev
   []
@@ -82,7 +91,9 @@
     (cljs-repl) ; do not change the order!
     (reload :on-jsload 'github-client.core/init!)
     (cljs :compiler-options {:parallel-build true
-                             :closure-defines {'github-client.config/dev? true}})
+                             :closure-defines {'github-client.config/dev? true
+                                               'github-client.config/clean? (clean?*)
+                                               'github-client.config/last-commit (last-commit*)}})
     (serve :port 8000)))
 
 (deftask prod

@@ -5,8 +5,10 @@
 
 (goog-define test? false)
 (goog-define dev? false)
+(goog-define clean? false)
+(goog-define last-commit "development")
 
-(defonce debug? (cell true))
+(defonce debug? (cell false))
 
 (defn debug-on!
   []
