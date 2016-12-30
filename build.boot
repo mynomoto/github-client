@@ -103,6 +103,7 @@
     (cljs
       :optimizations :advanced
       :compiler-options {:parallel-build true
+                         :language-in  :ecmascript5
                          :closure-defines {'github-client.config/clean? (clean?*)
                                            'github-client.config/last-commit (last-commit*)}})
     (target :dir #{"target"})))
