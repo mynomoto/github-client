@@ -1,6 +1,6 @@
 (ns github-client.core
   (:require
-    [devtools.core]
+    [goog.object :as obj]
     [github-client.page.core :as page]
     [github-client.reducer :as reducer]
     [github-client.handler.core :as handler]
@@ -16,7 +16,6 @@
   _one-time-side-effects
   (do
     (enable-console-print!)
-    (devtools.core/install! [:custom-formatters :hints :async])
     (state/restore-and-watch-db)
     (state/start-sync-title)
     (h/do-watch state/title
@@ -31,4 +30,4 @@
   (reducer/start! handler/global state/db reducer/queue hash-router state/history state/selected-history)
   (js/jQuery #(.replaceWith (js/jQuery "#app") (page/show {:db state/db :queue reducer/queue :hash-router hash-router :history state/history :selected-history state/selected-history}))))
 
-(init!)
+(obj/set js/window "core_js_reload" init!)

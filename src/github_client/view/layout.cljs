@@ -7,7 +7,7 @@
     [hoplon.spectre-css :as s]))
 
 (defn navbar
-  [{:keys [route db queue]}]
+  [{:keys [queue]}]
   (s/navbar
     :css {:background-color "#efefef"}
     (s/navbar-section

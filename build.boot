@@ -34,12 +34,13 @@
 
                   ;; Better devtools for Clojurescript
                   [binaryage/devtools "0.8.3" :scope "compile"]
+                  [powerlaces/boot-cljs-devtools "0.1.3-SNAPSHOT" :scope "compile"]
 
                   ;; Create static site and upload to S3
                   [confetti "0.1.4" :scope "compile"]
 
                   ;; Gzip all things
-                  [org.martinklepsch/boot-gzip "0.1.2" :scope "compile"]
+                  [org.martinklepsch/boot-gzip "0.1.3" :scope "compile"]
 
                   ;; Database
                   [datascript "0.15.5"]
@@ -50,7 +51,7 @@
 
                   ;; http
                   [funcool/httpurr "0.6.2"]
-                  [funcool/promesa "1.6.0"]
+                  [funcool/promesa "1.7.0"]
 
                   ;; routes
                   [com.domkm/silk "0.1.2"]
@@ -73,7 +74,8 @@
   '[confetti.boot-confetti :refer [sync-bucket create-site]]
   '[crisptrutski.boot-cljs-test :refer [test-cljs]]
   '[org.martinklepsch.boot-gzip :refer [gzip]]
-  '[tailrecursion.boot-static :refer [serve]])
+  '[tailrecursion.boot-static :refer [serve]]
+  '[powerlaces.boot-cljs-devtools :refer [cljs-devtools]])
 
 (defn- last-commit*
   []
@@ -94,12 +96,16 @@
     (devcards)
     (watch)
     (speak)
+    (cljs-devtools)
     (cljs-repl) ; do not change the order!
-    (reload :on-jsload 'github-client.core/init!)
-    (cljs :compiler-options {:parallel-build true
-                             :closure-defines {'github-client.config/dev? true
-                                               'github-client.config/clean? (clean?*)
-                                               'github-client.config/last-commit (last-commit*)}})
+    (reload :on-jsload 'cards.core/main)
+    (cljs
+      :optimizations :none
+      :compiler-options {:parallel-build true
+                         :devcards true
+                         :closure-defines {'github-client.config/dev? true
+                                           'github-client.config/clean? (clean?*)
+                                           'github-client.config/last-commit (last-commit*)}})
     (serve :port 8000)))
 
 (deftask prod
@@ -112,6 +118,7 @@
                          :language-in  :ecmascript5
                          :closure-defines {'github-client.config/clean? (clean?*)
                                            'github-client.config/last-commit (last-commit*)}})
+    (sift :include #{#"\.out"} :invert true)
     (target :dir #{"target"})))
 
 (deftask testing []
