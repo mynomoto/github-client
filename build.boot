@@ -100,7 +100,11 @@
   "Build github-client for production deployment."
   []
   (comp
-    (cljs :optimizations :advanced)
+    (cljs
+      :optimizations :advanced
+      :compiler-options {:parallel-build true
+                         :closure-defines {'github-client.config/clean? (clean?*)
+                                           'github-client.config/last-commit (last-commit*)}})
     (target :dir #{"target"})))
 
 (deftask testing []
