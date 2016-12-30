@@ -9,7 +9,6 @@
 (def routes
   (sugar.route/create
     [[:index [[]]]
-     [:contribute [["contribute"]]]
      [:profile [["profile"]]]
      [:profile-edit [["profile" "edit"]]]
      [:exploration [["exploration" :url-id]]]]))
@@ -19,10 +18,11 @@
   ([route params] (sugar.route/href routes route params)))
 
 (defn navigate!
-  ([route] (navigate! route nil))
-  ([route params] (sugar.route/navigate! routes route params)))
+  ([hash-router route] (navigate! hash-router route nil))
+  ([hash-router route params] (sugar.route/navigate! hash-router routes route params)))
 
 (defn update-route
+  "Save route on db"
   [db data]
   (db/store-app-data db :github-client :app/route data))
 

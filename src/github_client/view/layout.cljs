@@ -22,6 +22,9 @@
         :click #(swap! config/debug? not)
         (h/text "~(if config/debug? \"Debug off \" \"Debug on\")"))
       (s/button-link
+        :href "https://github.com/mynomoto/github-client"
+        "Code")
+      (s/button-link
         :href (route/href :profile)
         :click #(do
                   (.preventDefault %)
