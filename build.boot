@@ -20,6 +20,7 @@
                   ;; Clojurescript test
                   [crisptrutski/boot-cljs-test "0.3.0" :scope "compile"]
                   [juxt/iota "0.2.3" :scope "compile"]
+                  [devcards "0.2.2" :scope "compile"]
 
                   ;; Auto reload
                   [adzerk/boot-reload "0.4.13" :scope "compile"]
@@ -82,10 +83,15 @@
   []
   (try (clean?) (catch Throwable _)))
 
+(deftask devcards []
+  (merge-env! :resource-paths #{"devcards"})
+  identity)
+
 (deftask dev
   []
   "Build github-clieent for development."
   (comp
+    (devcards)
     (watch)
     (speak)
     (cljs-repl) ; do not change the order!

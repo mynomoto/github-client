@@ -1,0 +1,2 @@
+{:require [github-client.core github-client.reload]
+ :init-fns [github-client.core/init!]}
