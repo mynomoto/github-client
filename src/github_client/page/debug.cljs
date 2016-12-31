@@ -24,7 +24,7 @@
           (h/th "#")
           (h/th "Event")))
       (h/tbody
-        (for-tpl [[idx {:keys [history-event history-db]}] (cell= (map-indexed (fn [idx item] [idx item]) history))]
+        (for-tpl [[idx {:keys [history-event history-db]}] (cell= (map-indexed vector history))]
                  (h/tr
                    :css (cell= (if (= idx state/selected-history)
                                  {:cursor "pointer" :background-color "yellow"}

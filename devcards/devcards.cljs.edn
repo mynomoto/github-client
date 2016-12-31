@@ -1,3 +1,0 @@
-{:require [cards.core github-client.core github-client.reload]
- :compiler-options {:devcards true}
- :init-fns [devcards.core/start-devcard-ui!]}

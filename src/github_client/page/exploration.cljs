@@ -21,7 +21,7 @@
       (h/h3 (h/text "~{url-id}"))
       (h/h4 (h/text "~{url}"))
       (h/form
-        (for-tpl [[idx ph] (cell= (map-indexed (fn [idx item] [idx item]) placeholders))]
+        (for-tpl [[idx ph] (cell= (map-indexed vector placeholders))]
           (let [id (cell= (safe/keyword (:url-id route) (str idx)))]
             (s/form-group
               (s/form-label (h/text "~{ph}"))

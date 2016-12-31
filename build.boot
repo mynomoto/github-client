@@ -20,7 +20,6 @@
                   ;; Clojurescript test
                   [crisptrutski/boot-cljs-test "0.3.0" :scope "compile"]
                   [juxt/iota "0.2.3" :scope "compile"]
-                  [devcards "0.2.2" :scope "compile"]
 
                   ;; Auto reload
                   [adzerk/boot-reload "0.4.13" :scope "compile"]
@@ -85,24 +84,23 @@
   []
   (try (clean?) (catch Throwable _)))
 
-(deftask devcards []
-  (merge-env! :resource-paths #{"devcards"})
+(deftask hoplon-cards []
+  (merge-env! :resource-paths #{"hoplon_cards"})
   identity)
 
 (deftask dev
   []
   "Build github-clieent for development."
   (comp
-    (devcards)
+    (hoplon-cards)
     (watch)
     (speak)
     (cljs-devtools)
     (cljs-repl) ; do not change the order!
-    (reload :on-jsload 'cards.core/main)
+    (reload :on-jsload 'github-client.reload/on-js-reload)
     (cljs
       :optimizations :none
       :compiler-options {:parallel-build true
-                         :devcards true
                          :closure-defines {'github-client.config/dev? true
                                            'github-client.config/clean? (clean?*)
                                            'github-client.config/last-commit (last-commit*)}})

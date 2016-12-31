@@ -1,0 +1,2 @@
+{:require [cards.core github-client.core github-client.reload]
+ :init-fns [cards.core/init!]}
