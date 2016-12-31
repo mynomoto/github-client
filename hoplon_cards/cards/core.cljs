@@ -19,7 +19,7 @@
 (defonce card-register (cell []))
 
 (defn card
-  [header body]
+  [header & body]
   (s/card
     (s/card-header
       (h/h4 :class "card-title"
@@ -43,27 +43,32 @@
 (defn show []
   (layout/container
     :id "cards"
-    (mapv :card @card-register)
+    (mapv #((:card %)) @card-register)
     ))
+
+(def button-card
+  (add-to-register
+    {:id ::button
+     :card #(let [queue (async/chan 5)]
+             (card "Buttons"
+               (h/div :class "container"
+                 (h/div :column-xs 10
+                   (s/button
+                     "Default")
+                   (s/button-primary
+                     "Primary")
+                   (s/button-link
+                     "Link")))))}))
 
 (def navbar-card
   (add-to-register
-    {:id "navbar"
-     :card (let [queue (async/chan 5)]
+    {:id ::navbar
+     :card #(let [queue (async/chan 5)]
              (card "Navbar"
                (layout/navbar {:queue queue})))}))
 
-(def navbar2-card
-  (add-to-register
-    {:id "navbar2"
-     :card (let [queue (async/chan 5)]
-             (card "Navbar2"
-               (layout/navbar {:queue queue})))}))
-
-(defn reload []
+(defn ^:export reload []
   (js/jQuery #(.replaceWith (js/jQuery "#cards") (show))))
 
 (defn init! []
   (reload))
-
-(obj/set js/window "cards_js_reload" reload)

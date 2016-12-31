@@ -12,7 +12,7 @@
 
 (declare hash-router)
 
-(defn reload []
+(defn ^:export reload []
   (reducer/stop! reducer/queue)
   (reducer/start! handler/global state/db reducer/queue hash-router state/history state/selected-history)
   (js/jQuery #(.replaceWith (js/jQuery "#app") (page/show {:db state/db :queue reducer/queue :hash-router hash-router :history state/history :selected-history state/selected-history}))))
@@ -33,5 +33,3 @@
       (reducer/dispatch reducer/queue [:init])))
 
   (reload))
-
-(obj/set js/window "core_js_reload" reload)

@@ -2,5 +2,5 @@
 
 (defn on-js-reload []
   (if (.startsWith js/window.location.pathname "/cards.html")
-    (js/cards_js_reload)
-    (js/core_js_reload)))
+    (js/cards.core.reload)
+    (js/github_client.core.reload)))
