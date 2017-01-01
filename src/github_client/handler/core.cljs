@@ -6,7 +6,6 @@
     [sugar.datascript.form :as form]
     [github-client.api :as api]))
 
-
 (def global
   {:login-submit
    (fn [{:keys [db queue current-route]} data]
@@ -43,8 +42,8 @@
          (form/clear-dirty db data))))
 
    :navigate
-   (fn [{:keys [db hash-router]} data]
-     (apply route/navigate! hash-router data))
+   (fn [{:keys [db]} data]
+     (apply route/navigate! db data))
 
    :update-route
    (fn [{:keys [db]} data]

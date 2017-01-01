@@ -17,18 +17,31 @@
   ([route] (href route nil))
   ([route params] (sugar.route/href routes route params)))
 
-(defn navigate!
-  ([hash-router route] (navigate! hash-router route nil))
-  ([hash-router route params] (sugar.route/navigate! hash-router routes route params)))
+(defn path->route
+  ([path] (sugar.route/path->route routes path)))
 
 (defn update-route
   "Save route on db"
-  [db data]
-  (db/store-app-data db :github-client :app/route data))
+  [db [path route]]
+  (db/store-app-data db :github-client
+                     :app/path path
+                     :app/route (dissoc route :domkm.silk/routes :domkm.silk/url)))
+
+(defn navigate!
+  ([db route]
+   (navigate! db route nil))
+  ([db route params]
+   (let [path (sugar.route/hash->path (href route params))
+         parsed-route (path->route path)]
+     (if parsed-route
+       (db/store-app-data db :github-client
+                          :app/path path
+                          :app/route (dissoc parsed-route :domkm.silk/routes :domkm.silk/url))
+       (console.error ::route-not-found path)))))
 
 (defn init!
   "Initialize route listening."
-  [queue]
+  [queue current-route]
   (sugar.route/update-route-on-hashchange!
     routes
-    #(dispatch queue [:update-route %])))
+    #(when (not= @current-route (first %)) (dispatch queue [:update-route %]))))
