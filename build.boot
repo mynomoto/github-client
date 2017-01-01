@@ -29,6 +29,7 @@
 
                   ;; Hoplon
                   [hoplon "6.0.0-alpha17" :scope "compile"]
+                  [hoplon/javelin "3.9.0" :scope "compile"]
                   [mynomoto/hoplon-spectre.css "0.1.0" :scope "compile"]
 
                   ;; Better devtools for Clojurescript
