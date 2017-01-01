@@ -8,6 +8,11 @@
     [hoplon.spectre-css :as s]
     [javelin.core :as j :refer [cell] :refer-macros [cell= defc defc=]]))
 
+(defn history-cell [c]
+  (let [h-cell (cell [])]
+    (h/do-watch c (fn [old new] (swap! h-cell conj new)))
+    h-cell))
+
 (defn positions
   [pred coll]
   (keep-indexed
@@ -20,15 +25,15 @@
 
 (defn card
   [header & body]
-  (s/card
-    (s/card-header
-      (h/h4 :class "card-title"
-        header))
-    (s/card-body
-      body
-      )
-    (s/card-footer
-      )))
+  (let [history nil]
+    (s/card
+      (s/card-header
+        (h/h4 :class "card-title"
+          header))
+      (s/card-body
+        body)
+      (s/card-footer
+        history))))
 
 (defn upsert-card
   [register card]
@@ -43,8 +48,7 @@
 (defn show []
   (layout/container
     :id "cards"
-    (mapv #((:card %)) @card-register)
-    ))
+    (mapv #((:card %)) @card-register)))
 
 (def button-card
   (add-to-register
