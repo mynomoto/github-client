@@ -1,4 +1,4 @@
-(ns sugar.util)
+(ns benefactor.util)
 
 (defn korks->ks
   [korks]

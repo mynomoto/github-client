@@ -1,4 +1,4 @@
-(ns sugar.route
+(ns benefactor.route
   (:require
     [domkm.silk :as silk]
     [goog.History]
@@ -49,14 +49,13 @@
        (error-callback [(name route-name) params])))))
 
 (defn navigate!
-  "Given a hash-router, silk-routes, route-name and optional params, navigate
-  to a route when possible. Navigate to empty hash otherwise.
-  E.g.:
+  "Given a router, silk-routes, route-name and optional params, navigate to a
+  route when possible. Navigate to empty hash otherwise.  E.g.:
   `(go! app-route :sample {:id 6})`"
-  ([hash-router silk-routes route-name]
-   (navigate! hash-router silk-routes route-name nil))
-  ([hash-router silk-routes route-name params]
-   (.setToken hash-router (token->path (href silk-routes route-name params)))))
+  ([router silk-routes route-name]
+   (navigate! router silk-routes route-name nil))
+  ([router silk-routes route-name params]
+   (.setToken router (token->path (href silk-routes route-name params)))))
 
 (defn hash-route
   "Given a callback to be called with the event on Navigate returns a History

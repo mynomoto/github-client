@@ -16,9 +16,9 @@
   (console.groupEnd))
 
 (defn start!
-  [handler db queue hash-router history selected-history]
+  [handler {:keys [db] :as context} {:keys [history selected-history]}]
   (let [current-route (cell= (:app/route (db/get-app db :github-client)))
-        context {:db db :queue queue :hash-router hash-router :current-route current-route}]
+        context (assoc context :current-route current-route)]
     (go-loop []
       (when-let [[key data :as event] (async/<! queue)]
         (when-not (= :stop key)

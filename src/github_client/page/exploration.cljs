@@ -1,13 +1,13 @@
 (ns github-client.page.exploration
   (:require
     [cljs.pprint :as pprint]
-    [sugar.datascript.form :as form]
+    [benefactor.datascript.form :as form]
     [github-client.db :as db]
     [github-client.reducer :refer [dispatch]]
     [hoplon.core :as h :refer [defelem case-tpl cond-tpl for-tpl if-tpl when-tpl]]
     [hoplon.spectre-css :as s]
-    [sugar.json-html]
-    [sugar.safe :as safe]
+    [benefactor.json-html]
+    [benefactor.safe :as safe]
     [javelin.core :as j :refer [cell] :refer-macros [cell= defc defc=]]))
 
 (defn show
@@ -30,8 +30,8 @@
                 :change (fn [e]
                           (dispatch queue [:set-form-field [::exploration @id @e]]))
                 :keypress (fn [e]
-                            (when (= (sugar.keycodes/to-code :enter)
-                                     (sugar.keycodes/event->code e))
+                            (when (= (benefactor.keycodes/to-code :enter)
+                                     (benefactor.keycodes/event->code e))
                               (dispatch queue [:set-form-field [::exploration @id @e]])
                               (dispatch queue [:explore [@url-id @url]])))
                 :type "text"))))
@@ -60,4 +60,4 @@
               (h/pre
                 (h/text "~(with-out-str (pprint/pprint (get (db/get-app db :exploration) (or url-id :not-found))))")))
             (h/div
-              (cell= (sugar.json-html/render (get (db/get-app db :exploration) (or url-id :not-found)))))))))))
+              (cell= (benefactor.json-html/render (get (db/get-app db :exploration) (or url-id :not-found)))))))))))

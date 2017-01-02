@@ -4,8 +4,8 @@
     [hoplon.core :as h]
     [javelin.datascript]
     [javelin.core :as j :refer [cell] :refer-macros [cell= defc defc=]]
-    [sugar.datascript.form :as form]
-    [sugar.local-storage]))
+    [benefactor.datascript.form :as form]
+    [benefactor.local-storage]))
 
 (def schema
   "Schema for the central state storage"
@@ -32,12 +32,10 @@
 
 (defn restore-and-watch-db
   []
-  (some->> (sugar.local-storage/get :db-backup)
+  (some->> (benefactor.local-storage/get :db-backup)
              db/deserialize-transit
              (reset! db))
   (h/do-watch db
       (fn [old new]
         (when new
-          (sugar.local-storage/set! :db-backup (db/serialize-transit new))))))
-
-
+          (benefactor.local-storage/set! :db-backup (db/serialize-transit new))))))

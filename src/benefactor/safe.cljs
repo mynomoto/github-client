@@ -1,4 +1,4 @@
-(ns sugar.safe
+(ns benefactor.safe
   (:refer-clojure :exclude [keyword re-seq]))
 
 (defn re-seq

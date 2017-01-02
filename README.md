@@ -10,7 +10,7 @@ Changes in state should only happen through events making it possible to replay
 events so you could not only restore the whole state but also replay events and
 seeing the updated app.
 
-The `sugar.*` namespaces will be extracted to a library after they are stable
+The `benefactor.*` namespaces will be extracted to a library after they are stable
 enough. I don't want to write those again.
 
 Some inspiration for this project comes from [re-frame][re-frame]. The re-frame
@@ -20,11 +20,11 @@ makes it a full circle with re-frame ideas flowing back to Hoplon projects.
 This project is an github client written in Hoplon to show how those pieces go
 together.
 
-## Sugar
+## Benefactor
 You know that code that you have to keep writing to deal with cookies, local
 storage, json serializing, keycodes, routing and other small things? I don't
 want to keep rewriting or fing it on old projects so the intention is to put
-all that in library. At the moment the provisory name for that is sugar.
+all that in library. At the moment the provisory name for that is benefactor.
 
 ## Javelin + Datascript
 If you put a datascript db on a javelin cell you get some magic flowing values

@@ -10,8 +10,8 @@
     [httpurr.status :as status]
     [medley.core :as medley]
     [promesa.core :as p]
-    [sugar.datascript.form :as form]
-    [sugar.json]))
+    [benefactor.datascript.form :as form]
+    [benefactor.json]))
 
 (def ^:const api-host "https://api.github.com")
 
@@ -35,7 +35,7 @@
   "Updates the body of a request to convert it to a json string."
   [request]
   (if (:body request)
-    (update request :body sugar.json/serialize)
+    (update request :body benefactor.json/serialize)
     request))
 
 (defn request
@@ -59,7 +59,7 @@
 
 (defn process-response
   [response]
-  (let [response (update response :body sugar.json/deserialize)]
+  (let [response (update response :body benefactor.json/deserialize)]
     (condp = (:status response)
       status/ok           (p/resolved response)
       status/not-found    (p/rejected response)

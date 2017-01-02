@@ -1,15 +1,15 @@
 (ns github-client.page.login
   (:require
     [clojure.string :as str]
-    [sugar.datascript.form :as form]
+    [benefactor.datascript.form :as form]
     [github-client.db :as db]
     [github-client.reducer :refer [dispatch]]
     [github-client.route :as route]
     [hoplon.core :as h :refer [defelem case-tpl cond-tpl for-tpl if-tpl when-tpl]]
     [hoplon.spectre-css :as s]
     [javelin.core :as j :refer [cell] :refer-macros [cell= defc defc=]]
-    [sugar.keycodes]
-    [sugar.local-storage]))
+    [benefactor.keycodes]
+    [benefactor.local-storage]))
 
 (defn error-label
   [show? text]
@@ -53,8 +53,8 @@
                 :change (fn [e]
                           (dispatch queue [:set-form-field [::login :user/username @e]]))
                 :keypress (fn [e]
-                            (when (= (sugar.keycodes/to-code :enter)
-                                     (sugar.keycodes/event->code e))
+                            (when (= (benefactor.keycodes/to-code :enter)
+                                     (benefactor.keycodes/event->code e))
                               (dispatch queue [:set-form-field [::login :user/username @e]])
                               (dispatch queue [:update-profile])))
                 :placeholder "Username")
@@ -78,8 +78,8 @@
                 :change (fn [e]
                           (dispatch queue [:set-form-field [::login :user/token @e]]))
                 :keypress (fn [e]
-                            (when (= (sugar.keycodes/to-code :enter)
-                                     (sugar.keycodes/event->code e))
+                            (when (= (benefactor.keycodes/to-code :enter)
+                                     (benefactor.keycodes/event->code e))
                               (dispatch queue [:set-form-field [::login :user/token @e]])
                               (dispatch queue [:update-profile])))
                 :placeholder "Token")

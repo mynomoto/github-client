@@ -3,7 +3,7 @@
     [cljs.reader]
     [javelin.datascript :as d]
     [datascript.transit :as dt]
-    [sugar.datascript.form :as form]))
+    [benefactor.datascript.form :as form]))
 
 (defn get-app
   [db id]

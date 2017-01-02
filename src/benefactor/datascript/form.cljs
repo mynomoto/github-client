@@ -1,7 +1,7 @@
-(ns sugar.datascript.form
+(ns benefactor.datascript.form
   (:require
     [javelin.datascript :as d]
-    [sugar.util]))
+    [benefactor.util]))
 
 (defn value
   [db id k]
@@ -12,7 +12,7 @@
   ([db id]
    (d/touch (d/entity db [::value id])))
   ([db id korks]
-   (d/select-keys (d/entity db [::value id]) (sugar.util/korks->ks korks))))
+   (d/select-keys (d/entity db [::value id]) (benefactor.util/korks->ks korks))))
 
 (defn error
   [db id k]

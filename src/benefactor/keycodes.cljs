@@ -1,4 +1,4 @@
-(ns sugar.keycodes)
+(ns benefactor.keycodes)
 
 (def to-code
   {:enter 13})

@@ -1,16 +1,16 @@
-(ns sugar.transit-test
+(ns benefactor.transit-test
   (:require
-    [sugar.transit]
+    [benefactor.transit]
     [clojure.test :refer-macros [deftest testing is]]))
 
 (deftest edn->transit->edn
   (is (= {:a "value-a"}
     (-> {:a "value-a"}
-        sugar.transit/serialize
-        sugar.transit/deserialize))))
+        benefactor.transit/serialize
+        benefactor.transit/deserialize))))
 
 (deftest transit->edn->transit
   (is (= "[\"^ \",\"a\",\"value-a\"]"
     (-> "[\"^ \",\"a\",\"value-a\"]"
-        sugar.transit/deserialize
-        sugar.transit/serialize))))
+        benefactor.transit/deserialize
+        benefactor.transit/serialize))))

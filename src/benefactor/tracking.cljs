@@ -1,4 +1,4 @@
-(ns sugar.tracking
+(ns benefactor.tracking
   (:refer-clojure :exclude [get])
   (:require
     [clojure.string :as str]))

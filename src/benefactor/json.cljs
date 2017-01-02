@@ -1,6 +1,6 @@
-(ns sugar.json
+(ns benefactor.json
   (:require
-    [sugar.transit]
+    [benefactor.transit]
     [cognitect.transit :as t]))
 
 (defn serialize
@@ -18,11 +18,11 @@
   "Converts a clojure object to a json string. Keys need to be strings because
   this uses transit for the serialization."
   [clj]
-  (sugar.transit/serialize-verbose clj))
+  (benefactor.transit/serialize-verbose clj))
 
 (defn deserialize-t
   "Converts a json string to a clojure object keeping keys as strings because
   this uses transit for the deserialization"
   [json-str]
   (when json-str
-    (sugar.transit/deserialize json-str)))
+    (benefactor.transit/deserialize json-str)))

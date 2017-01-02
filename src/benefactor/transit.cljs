@@ -1,4 +1,4 @@
-(ns sugar.transit
+(ns benefactor.transit
   (:require
     [cognitect.transit :as t]))
 

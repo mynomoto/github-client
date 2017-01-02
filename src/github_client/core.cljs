@@ -14,16 +14,19 @@
 (defonce path
   (cell= (:app/path (db/get-app state/db :github-client))))
 
-(defonce hash-router
+(defonce router
   (route/init! reducer/queue path))
 
 (defn ^:export reload []
   (reducer/stop! reducer/queue)
-  (reducer/start! handler/global state/db reducer/queue hash-router state/history state/selected-history)
+  (reducer/start! handler/global
+    {:db state/db
+     :queue reducer/queue}
+   {:history state/history
+    :selected-history state/selected-history})
   (js/jQuery
     #(.replaceWith (js/jQuery "#app")
        (page/show {:db state/db
-                   :hash-router hash-router
                    :history state/history
                    :queue reducer/queue
                    :selected-history state/selected-history}))))
@@ -35,12 +38,16 @@
   (h/do-watch state/title
     (fn [old new]
       (set! (.-title js/document) new)))
-  (reducer/start! handler/global state/db reducer/queue hash-router state/history state/selected-history)
+  (reducer/start! handler/global
+    {:db state/db
+     :queue reducer/queue}
+   {:history state/history
+    :selected-history state/selected-history})
   (reducer/dispatch reducer/queue [:init])
 
   (add-watch path ::route-watch
     (fn [k r o n]
       (when (not= o n)
-        (.setToken hash-router (sugar.route/path->token n)))))
+        (.setToken router (benefactor.route/path->token n)))))
 
   (reload))

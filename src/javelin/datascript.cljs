@@ -3,7 +3,7 @@
   (:require
     [datascript.core :as datascript]
     [javelin.core :as j]
-    [sugar.util]))
+    [benefactor.util]))
 
 (def empty-db datascript/empty-db)
 
@@ -26,7 +26,7 @@
 (defn select-keys
   "A nil safe select keys for use with entities so it don't try to fetch a nil key."
   [entity korks]
-  (->> (sugar.util/korks->ks korks)
+  (->> (benefactor.util/korks->ks korks)
        (remove nil?)
        (clojure.core/select-keys entity)))
 

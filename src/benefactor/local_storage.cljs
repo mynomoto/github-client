@@ -1,15 +1,15 @@
-(ns sugar.local-storage
+(ns benefactor.local-storage
   "Local storage utilities. Uses transit to serialize and deserialize values."
   (:refer-clojure :exclude [get set!])
   (:require
-    [sugar.transit]))
+    [benefactor.transit]))
 
 (defn set!
   "Given a key and a value sets the key to the serialized value in the local storage."
   [key val]
   (.setItem (.-localStorage js/window)
             (name key)
-            (sugar.transit/serialize val)))
+            (benefactor.transit/serialize val)))
 
 (defn get
   "Given a key, gets the deserialized value in the local storage at the key.
@@ -18,7 +18,7 @@
   ([key default]
    (or (some->> (name key)
                 (.getItem (.-localStorage js/window))
-                sugar.transit/deserialize)
+                benefactor.transit/deserialize)
        default)))
 
 (defn remove!

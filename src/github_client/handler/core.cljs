@@ -3,7 +3,7 @@
     [github-client.db :as db]
     [github-client.route :as route]
     [github-client.reducer :refer [dispatch]]
-    [sugar.datascript.form :as form]
+    [benefactor.datascript.form :as form]
     [github-client.api :as api]))
 
 (def global
