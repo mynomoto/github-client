@@ -1,6 +1,7 @@
 (ns github-client.reducer
   (:require
     [cljs.core.async :as async]
+    [github-client.config :as config]
     [github-client.db :as db]
     [javelin.core :as j :refer [cell] :refer-macros [cell= defc defc=]])
   (:require-macros
@@ -23,7 +24,7 @@
       (when-let [[key data :as event] (async/<! queue)]
         (when-not (= :stop key)
           (try
-            (console.log ::event event)
+            (when config/dev? (console.log ::event event))
             ((key handler handler-not-found) (assoc context :key key) data)
             (db/save-history history event @db selected-history)
             (catch js/Error e

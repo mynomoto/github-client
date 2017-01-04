@@ -14,7 +14,7 @@
                   ;; Clojurescript repl
                   [adzerk/boot-cljs-repl "0.3.3" :scope "compile"]
                   [com.cemerick/piggieback "0.2.1" :scope "compile"]
-                  [weasel "0.7.0" :scope "test"]
+                  [weasel "0.7.0" :scope "compile"]
                   [org.clojure/tools.nrepl "0.2.12" :scope "compile"]
 
                   ;; Clojurescript test
@@ -22,7 +22,7 @@
                   [juxt/iota "0.2.3" :scope "compile"]
 
                   ;; Auto reload
-                  [adzerk/boot-reload "0.4.13" :scope "compile"]
+                  [adzerk/boot-reload "0.5.0" :scope "compile"]
 
                   ;; Serve static contents
                   [tailrecursion/boot-static "0.1.0" :scope "compile"]
@@ -32,6 +32,7 @@
                   [hoplon/javelin "3.9.0" :scope "compile"]
                   [mynomoto/hoplon-spectre.css "0.1.0" :scope "compile"]
 
+                  [benefactor "0.0.1-SNAPSHOT"]
                   ;; Better devtools for Clojurescript
                   [binaryage/devtools "0.8.3" :scope "compile"]
                   [powerlaces/boot-cljs-devtools "0.1.3-SNAPSHOT" :scope "compile"]
