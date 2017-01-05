@@ -15,7 +15,7 @@
 
 (defn href
   ([route-name] (href route-name nil))
-  ([route-name params] (benefactor.route/href routes route-name params)))
+  ([route-name params] (benefactor.route/route->path routes route-name params)))
 
 (defn path->route
   ([path] (benefactor.route/path->route routes path)))
@@ -42,6 +42,6 @@
 (defn init!
   "Initialize route listening."
   [queue current-route]
-  (benefactor.route/update-route-on-hashchange!
+  (benefactor.route/setup-router
     routes
     #(when (not= @current-route (first %)) (dispatch queue [:update-route %]))))

@@ -45,9 +45,6 @@
     :selected-history state/selected-history})
   (reducer/dispatch reducer/queue [:init])
 
-  (add-watch path ::route-watch
-    (fn [k r o n]
-      (when (not= o n)
-        (.setToken router (benefactor.route/path->token n)))))
+  (benefactor.route/sync-from-atom router path)
 
   (reload))

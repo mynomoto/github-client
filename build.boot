@@ -65,6 +65,8 @@
   :source-paths #{"src"}
   :asset-paths #{"assets"})
 
+(ns-unmap *ns* 'test)
+
 (require
   '[adzerk.boot-cljs :refer [cljs]]
   '[adzerk.boot-cljs-repl :refer [cljs-repl start-repl]]
@@ -133,7 +135,7 @@
     (speak)
     (test-cljs :cljs-opts {:closure-defines {'github-client.config/test? true}})))
 
-(deftask run-tests
+(deftask test
   []
   (comp
     (testing)
