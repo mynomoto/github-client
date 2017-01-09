@@ -1,5 +1,6 @@
 (ns github-client.api
   (:require
+    [benefactor.http]
     [github-client.db :as db]
     [github-client.reducer :refer [dispatch]]
     [github-client.route :as route]
@@ -15,62 +16,41 @@
 
 (def ^:const api-host "https://api.github.com")
 
-(defn auth-header
-  [username token]
-  (when token
-    (str "Basic " (base64/encodeString (str username ":" token)))))
-
 (defn default-headers
   [username token]
   (medley/assoc-some {"Content-Type" "application/json"
                       "Accept" "application/vnd.github.v3+json"}
-                     "Authorization" (auth-header username token)))
+                     "Authorization" (benefactor.http/basic-auth-header username token)))
 
 (defn default-request-map
   [username token]
   {:method :get
    :headers (default-headers username token)})
 
-(defn encode-request-body
-  "Updates the body of a request to convert it to a json string."
-  [request]
-  (if (:body request)
-    (update request :body benefactor.json/serialize)
-    request))
-
 (defn request
   "Updates the body of a request to convert it to a json string."
   [request-map]
-  (http/send! client
+  (benefactor.http/request client
     (merge-with merge
       (let [user (db/get-user @state/db)]
         (default-request-map (:user/username user) (:user/token user)))
-      (encode-request-body request-map))))
+      (benefactor.http/json-serialize-request-body request-map))))
 
 (defn login-request
   "Do a login request"
   [request-map]
-  (http/send! client
+  (benefactor.http/request client
     (merge-with merge
       (let [form-user (form/values @state/db :github-client.page.login/login)
             user (db/get-user @state/db)]
         (default-request-map (:user/username form-user (:user/username user)) (:user/token form-user (:user/token user))))
-      (encode-request-body request-map))))
-
-(defn process-response
-  [response]
-  (let [response (update response :body benefactor.json/deserialize)]
-    (condp = (:status response)
-      status/ok           (p/resolved response)
-      status/not-found    (p/rejected response)
-      status/unauthorized (p/rejected response)
-      (p/rejected response))))
+      (benefactor.http/json-serialize-request-body request-map))))
 
 (defn login
   [db queue route]
   (-> (p/chain
         (login-request {:url api-host})
-        process-response
+        benefactor.http/reject-response-if-not-success
         :body
         (fn [body]
           (dispatch queue [:update-local-data [:github-client.page.login/login [:user/token :user/username] [:user/id :github-client]]])
@@ -89,7 +69,7 @@
   [url-id url db queue]
   (-> (p/chain
         (request {:url url})
-        process-response
+        benefactor.http/reject-response-if-not-success
         :body
         (fn [body]
           (dispatch queue [:store-app-data [:exploration url-id body]])))
