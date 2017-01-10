@@ -9,6 +9,7 @@
     [goog.object :as obj]
     [hoplon.core :as h :refer [defelem case-tpl cond-tpl for-tpl if-tpl when-tpl]]
     [hoplon.jquery]
+    [httpurr.client.xhr :as xhr]
     [javelin.core :as j :refer [cell] :refer-macros [cell= defc defc=]]))
 
 (defonce path
@@ -17,13 +18,18 @@
 (defonce router
   (route/init! reducer/queue path))
 
-(defn ^:export reload []
-  (reducer/stop! reducer/queue)
+(defn start-reducer!
+  []
   (reducer/start! handler/global
     {:db state/db
+     :http xhr/client
      :queue reducer/queue}
-   {:history state/history
-    :selected-history state/selected-history})
+    {:history state/history
+     :selected-history state/selected-history}))
+
+(defn ^:export reload []
+  (reducer/stop! reducer/queue)
+  (start-reducer!)
   (js/jQuery
     #(.replaceWith (js/jQuery "#app")
        (page/show {:db state/db
@@ -38,11 +44,7 @@
   (h/do-watch state/title
     (fn [old new]
       (set! (.-title js/document) new)))
-  (reducer/start! handler/global
-    {:db state/db
-     :queue reducer/queue}
-   {:history state/history
-    :selected-history state/selected-history})
+  (start-reducer!)
   (reducer/dispatch reducer/queue [:init])
 
   (benefactor.route/sync-from-atom router path)

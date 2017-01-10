@@ -105,8 +105,7 @@
     (cljs
       :optimizations :none
       :compiler-options {:parallel-build true
-                         :closure-defines {'github-client.config/dev? true
-                                           'github-client.config/clean? (clean?*)
+                         :closure-defines {'github-client.config/clean? (clean?*)
                                            'github-client.config/last-commit (last-commit*)}})
     (serve :port 8000)))
 
@@ -119,7 +118,8 @@
       :compiler-options {:parallel-build true
                          :language-in  :ecmascript5
                          :closure-defines {'github-client.config/clean? (clean?*)
-                                           'github-client.config/last-commit (last-commit*)}})
+                                           'github-client.config/last-commit (last-commit*)
+                                           'goog.DEBUG false}})
     (sift :include #{#"\.out"} :invert true)
     (target :dir #{"target"})))
 

@@ -20,7 +20,8 @@
   [username token]
   (medley/assoc-some {"Content-Type" "application/json"
                       "Accept" "application/vnd.github.v3+json"}
-                     "Authorization" (benefactor.http/basic-auth-header username token)))
+                     "Authorization" (when (and username token)
+                                       (benefactor.http/basic-auth-header username token))))
 
 (defn default-request-map
   [username token]
@@ -29,8 +30,8 @@
 
 (defn request
   "Updates the body of a request to convert it to a json string."
-  [request-map]
-  (benefactor.http/request client
+  [http request-map]
+  (benefactor.http/request http
     (merge-with merge
       (let [user (db/get-user @state/db)]
         (default-request-map (:user/username user) (:user/token user)))
@@ -38,8 +39,8 @@
 
 (defn login-request
   "Do a login request"
-  [request-map]
-  (benefactor.http/request client
+  [http request-map]
+  (benefactor.http/request http
     (merge-with merge
       (let [form-user (form/values @state/db :github-client.page.login/login)
             user (db/get-user @state/db)]
@@ -47,10 +48,11 @@
       (benefactor.http/json-serialize-request-body request-map))))
 
 (defn login
-  [db queue route]
+  [http db queue route]
   (-> (p/chain
-        (login-request {:url api-host})
+        (login-request http {:url api-host})
         benefactor.http/reject-response-if-not-success
+        benefactor.http/json-deserialize-response-body
         :body
         (fn [body]
           (dispatch queue [:update-local-data [:github-client.page.login/login [:user/token :user/username] [:user/id :github-client]]])
@@ -66,10 +68,11 @@
                  (dispatch queue [:set-form-error [:github-client.page.login/login :user/token (-> err :body :message) :user/username (-> err :body :message)]])))))
 
 (defn exploration
-  [url-id url db queue]
+  [http url-id url db queue]
   (-> (p/chain
-        (request {:url url})
+        (request http {:url url})
         benefactor.http/reject-response-if-not-success
+        benefactor.http/json-deserialize-response-body
         :body
         (fn [body]
           (dispatch queue [:store-app-data [:exploration url-id body]])))

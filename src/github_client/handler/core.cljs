@@ -8,8 +8,8 @@
 
 (def global
   {:login-submit
-   (fn [{:keys [db queue current-route]} data]
-     (api/login db queue current-route))
+   (fn [{:keys [db current-route http queue]} data]
+     (api/login http db queue current-route))
 
    :update-profile
    (fn [{:keys [queue]} data]
@@ -66,5 +66,5 @@
      (dispatch queue [:store-app-data [:github-client :page/title "Hoplon Github Client"]]))
 
    :explore
-   (fn [{:keys [queue db]} [url-id url]]
-     (api/exploration url-id url db queue))})
+   (fn [{:keys [queue db http]} [url-id url]]
+     (api/exploration http url-id url db queue))})

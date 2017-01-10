@@ -34,7 +34,7 @@
     (update request :body benefactor.json/serialize)
     request))
 
-(defn json-deserialize-reponse-body
+(defn json-deserialize-response-body
   [response]
   (if (:body response)
     (update response :body benefactor.json/deserialize)
