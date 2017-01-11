@@ -22,6 +22,7 @@
       (h/thead
         (h/tr
           (h/th "#")
+          (h/th "Timestamp")
           (h/th "Event")))
       (h/tbody
         (for-tpl [[idx {:keys [history-event history-db]}] (cell= (map-indexed vector history))]
@@ -33,4 +34,5 @@
                              (reset! db @history-db)
                              (reset! state/selected-history @idx))
                    (h/td (h/text "~{idx}"))
+                   (h/td (h/text "~(:event-timestamp (meta history-event))"))
                    (h/td (h/text "~(pr-str history-event)"))))))))
