@@ -1,9 +1,14 @@
 (ns github-client.page.debug
   (:require
+    [clojure.string :as str]
     [github-client.state :as state]
     [hoplon.core :as h :refer [defelem case-tpl cond-tpl for-tpl if-tpl when-tpl]]
     [hoplon.spectre-css :as s]
     [javelin.core :as j :refer [cell] :refer-macros [cell= defc defc=]]))
+
+(defn format-event-timestamp
+  [timestamp]
+  (str/replace timestamp \T " "))
 
 (defn show
   [{:keys [route db queue history]}]
@@ -34,5 +39,5 @@
                              (reset! db @history-db)
                              (reset! state/selected-history @idx))
                    (h/td (h/text "~{idx}"))
-                   (h/td (h/text "~(:event-timestamp (meta history-event))"))
+                   (h/td (h/text "~(format-event-timestamp (:event-timestamp (meta history-event)))"))
                    (h/td (h/text "~(pr-str history-event)"))))))))

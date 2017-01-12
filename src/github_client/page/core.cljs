@@ -18,11 +18,11 @@
         context (assoc context :route route)]
     (h/div :id "app"
       (layout/navbar context)
+      (when-tpl config/debug?
+        (s/columns
+          (h/div :column 12
+            (page.debug/show context))))
       (layout/container
-        (when-tpl config/debug?
-          (s/columns
-            (h/div :column 12
-              (page.debug/show context))))
         (s/columns
           (h/div
             :column 12
