@@ -30,29 +30,33 @@
 
 (defn request
   "Updates the body of a request to convert it to a json string."
-  [http request-map]
+  [http request-map queue]
   (benefactor.http/request http
     (merge-with merge
       (let [user (db/get-user @state/db)]
         (default-request-map (:user/username user) (:user/token user)))
-      (benefactor.http/json-serialize-request-body request-map))))
+      (benefactor.http/json-serialize-request-body request-map))
+    #(dispatch queue [:loading %])
+    #(dispatch queue [:done %])))
 
 (defn login-request
   "Do a login request"
-  [http request-map]
+  [http request-map queue]
   (benefactor.http/request http
     (merge-with merge
       (let [form-user (form/values @state/db :github-client.page.login/login)
             user (db/get-user @state/db)]
         (default-request-map (:user/username form-user (:user/username user)) (:user/token form-user (:user/token user))))
-      (benefactor.http/json-serialize-request-body request-map))))
+      (benefactor.http/json-serialize-request-body request-map))
+    #(dispatch queue [:loading %])
+    #(dispatch queue [:done %])))
 
 (defn login
   [http db queue route]
   (-> (p/chain
-        (login-request http {:url api-host})
-        benefactor.http/reject-response-if-not-success
+        (login-request http {:url api-host} queue)
         benefactor.http/json-deserialize-response-body
+        benefactor.http/reject-response-if-not-success
         :body
         (fn [body]
           (dispatch queue [:update-local-data [:github-client.page.login/login [:user/token :user/username] [:user/id :github-client]]])
@@ -70,9 +74,9 @@
 (defn exploration
   [http url-id url db queue]
   (-> (p/chain
-        (request http {:url url})
-        benefactor.http/reject-response-if-not-success
+        (request http {:url url} queue)
         benefactor.http/json-deserialize-response-body
+        benefactor.http/reject-response-if-not-success
         :body
         (fn [body]
           (dispatch queue [:store-app-data [:exploration url-id body]])))

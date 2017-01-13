@@ -13,12 +13,21 @@
 
 (defn request
   "Request using the client an request-map. Optionally accepts a before-fn that
-  will be called before the request is send with the request map as argument."
+  will be called before the request is send with the request map as argument.
+  You can also pass a after-fn that will receive the request map and the result
+  as arguments but if you do this the request is not cancelable anymore."
   ([client request-map]
    (http/send! client request-map))
   ([client request-map before-fn]
    (before-fn request-map)
-   (http/send! client request-map)))
+   (http/send! client request-map))
+  ([client request-map before-fn after-fn]
+   (before-fn request-map)
+   (p/branch (http/send! client request-map)
+     #(do (after-fn request-map %)
+        (p/resolved %))
+     #(do (after-fn request-map %)
+        (p/rejected %)))))
 
 (defn reject-response-if-not-success
   "Given a reponse reject in case the status is not success."
