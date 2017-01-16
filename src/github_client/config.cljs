@@ -1,6 +1,5 @@
 (ns github-client.config
   (:require
-    [goog.object :as obj]
     [javelin.core :as j :refer [cell] :refer-macros [cell= defc defc=]]))
 
 (goog-define clean? false)

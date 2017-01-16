@@ -1,6 +1,7 @@
 (ns benefactor.http
   (:require
     [goog.crypt.base64 :as base64]
+    [goog.object :as obj]
     [httpurr.client :as http]
     [httpurr.status :as status]
     [promesa.core :as p]))
@@ -27,14 +28,18 @@
      #(do (after-fn request-map %)
         %)
      #(do (after-fn request-map %)
-        (throw %)))))
+        (p/rejected
+          (doto (js/Error. "Request Error")
+            (obj/set "response" %)))))))
 
 (defn reject-response-if-not-success
   "Given a reponse reject in case the status is not success."
   [response]
   (cond
     (status/success? response) response
-    :else (throw response)))
+    :else (p/rejected
+            (doto (js/Error. "Status Code Error")
+              (obj/set "response" response)))))
 
 (defn json-serialize-request-body
   "Updates the body of a request to convert it to a json string."

@@ -2,7 +2,6 @@
   (:require
     [cljs.core.async :as async]
     [github-client.view.layout :as layout]
-    [goog.object :as obj]
     [hoplon.core :as h :refer [defelem case-tpl cond-tpl for-tpl if-tpl when-tpl]]
     [hoplon.jquery]
     [hoplon.spectre-css :as s]

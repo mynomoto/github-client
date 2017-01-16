@@ -6,7 +6,6 @@
     [github-client.reducer :as reducer]
     [github-client.route :as route]
     [github-client.state :as state]
-    [goog.object :as obj]
     [hoplon.core :as h :refer [defelem case-tpl cond-tpl for-tpl if-tpl when-tpl]]
     [hoplon.jquery]
     [httpurr.client.xhr :as xhr]

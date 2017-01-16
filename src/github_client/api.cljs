@@ -6,6 +6,7 @@
     [github-client.route :as route]
     [github-client.state :as state]
     [goog.crypt.base64 :as base64]
+    [goog.object :as obj]
     [httpurr.client :as http]
     [httpurr.client.xhr :refer [client]]
     [httpurr.status :as status]
@@ -70,7 +71,7 @@
               (#{:profile-edit} route) (dispatch queue [:navigate [:profile]])
               :else nil))))
       (p/catch (fn [err]
-                 (console.log ::request-failed err)
+                 (console.log ::request-failed (obj/get err "response"))
                  (dispatch queue [:set-form-error [:github-client.page.login/login :user/token (-> err :body :message) :user/username (-> err :body :message)]])))))
 
 (defn exploration
@@ -85,4 +86,4 @@
         (fn [body]
           (dispatch queue [:store-app-data [:exploration url-id body]])))
       (p/catch (fn [err]
-                 (dispatch queue [:show-error err])))))
+                 (dispatch queue [:show-error (obj/get err "response")])))))
