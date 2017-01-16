@@ -8,7 +8,8 @@
 
 (defn format-event-timestamp
   [timestamp]
-  (str/replace timestamp \T " "))
+  (when timestamp
+    (str/replace timestamp \T " ")))
 
 (defn show
   [{:keys [route db queue history]}]

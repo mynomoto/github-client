@@ -25,16 +25,16 @@
    (before-fn request-map)
    (p/branch (http/send! client request-map)
      #(do (after-fn request-map %)
-        (p/resolved %))
+        %)
      #(do (after-fn request-map %)
-        (p/rejected %)))))
+        (throw %)))))
 
 (defn reject-response-if-not-success
   "Given a reponse reject in case the status is not success."
   [response]
   (cond
-    (status/success? response) (p/resolved response)
-    :else (p/rejected response)))
+    (status/success? response) response
+    :else (throw response)))
 
 (defn json-serialize-request-body
   "Updates the body of a request to convert it to a json string."

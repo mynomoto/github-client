@@ -57,3 +57,28 @@
                                     value)]
                     [{:db/id eid attr new-vector}]))]
     (transact! db [[:db.fn/call push-fn eid]])))
+
+(defn set-add
+  [db eid attr value]
+  (let [add-fn (fn [db eid]
+                 (let [new-set ((fnil conj #{})
+                                (ffirst
+                                  (q '{:find [?set]
+                                       :in [$ ?eid ?attr]
+                                       :where [[?eid ?attr ?set]]}
+                                    db eid attr))
+                                value)]
+                   [{:db/id eid attr new-set}]))]
+    (transact! db [[:db.fn/call add-fn eid]])))
+
+(defn set-remove
+  [db eid attr value]
+  (let [remove-fn (fn [db eid]
+                    (let [new-set (disj (ffirst
+                                          (q '{:find [?vector]
+                                               :in [$ ?eid ?attr]
+                                               :where [[?eid ?attr ?vector]]}
+                                            db eid attr))
+                                    value)]
+                      [{:db/id eid attr new-set}]))]
+    (transact! db [[:db.fn/call remove-fn eid]])))

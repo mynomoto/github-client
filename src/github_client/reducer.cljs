@@ -14,7 +14,7 @@
   [context data]
   (console.group)
   (console.error ::handler-not-found)
-  (console.log (:key context) data)
+  (console.log data)
   (console.groupEnd))
 
 (defn start!
@@ -22,11 +22,11 @@
   (let [current-route (cell= (:app/route (db/get-app db :github-client)))
         context (assoc context :current-route current-route)]
     (go-loop []
-      (when-let [[key data :as event] (async/<! queue)]
+      (when-let [[key :as event] (async/<! queue)]
         (when-not (= :stop key)
           (try
             (dev/when-debug (console.log ::event event))
-            ((key handler handler-not-found) (assoc context :key key) data)
+            ((key handler handler-not-found) context event)
             (db/save-history history event @db selected-history)
             (catch js/Error e
               (dev/when-debug (console.error ::handler-error e))))

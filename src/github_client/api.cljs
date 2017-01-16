@@ -30,31 +30,33 @@
 
 (defn request
   "Updates the body of a request to convert it to a json string."
-  [http request-map queue]
+  [http request-map loading-fn done-fn]
   (benefactor.http/request http
     (merge-with merge
       (let [user (db/get-user @state/db)]
         (default-request-map (:user/username user) (:user/token user)))
       (benefactor.http/json-serialize-request-body request-map))
-    #(dispatch queue [:loading %])
-    #(dispatch queue [:done %])))
+    loading-fn
+    done-fn))
 
 (defn login-request
   "Do a login request"
-  [http request-map queue]
+  [http request-map loading-fn done-fn]
   (benefactor.http/request http
     (merge-with merge
       (let [form-user (form/values @state/db :github-client.page.login/login)
             user (db/get-user @state/db)]
         (default-request-map (:user/username form-user (:user/username user)) (:user/token form-user (:user/token user))))
       (benefactor.http/json-serialize-request-body request-map))
-    #(dispatch queue [:loading %])
-    #(dispatch queue [:done %])))
+    loading-fn
+    done-fn))
 
 (defn login
-  [http db queue route]
+  [{:keys [db http queue current-route]} event]
   (-> (p/chain
-        (login-request http {:url api-host} queue)
+        (login-request http {:url api-host}
+          #(dispatch queue [:loading event])
+          #(dispatch queue [:done event]))
         benefactor.http/json-deserialize-response-body
         benefactor.http/reject-response-if-not-success
         :body
@@ -62,7 +64,7 @@
           (dispatch queue [:update-local-data [:github-client.page.login/login [:user/token :user/username] [:user/id :github-client]]])
           (dispatch queue [:store-app-data [:github-client :app/url body]])
           (dispatch queue [:clear-form-errors :github-client.page.login/login])
-          (let [route (:domkm.silk/name @route)]
+          (let [route (:domkm.silk/name @current-route)]
             (cond
               (#{:login} route) (dispatch queue [:navigate [:index]])
               (#{:profile-edit} route) (dispatch queue [:navigate [:profile]])
@@ -72,9 +74,11 @@
                  (dispatch queue [:set-form-error [:github-client.page.login/login :user/token (-> err :body :message) :user/username (-> err :body :message)]])))))
 
 (defn exploration
-  [http url-id url db queue]
+  [{:keys [db http queue]} [_ [url-id url] :as event]]
   (-> (p/chain
-        (request http {:url url} queue)
+        (request http {:url url}
+          #(dispatch queue [:loading event])
+          #(dispatch queue [:done event]))
         benefactor.http/json-deserialize-response-body
         benefactor.http/reject-response-if-not-success
         :body

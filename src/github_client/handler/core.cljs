@@ -4,35 +4,35 @@
     [github-client.route :as route]
     [github-client.reducer :refer [dispatch]]
     [benefactor.datascript.form :as form]
+    [javelin.datascript]
     [github-client.api :as api]))
 
 (def global
   {:login-submit
-   (fn [{:keys [db current-route http queue]} data]
-     (api/login http db queue current-route))
+   api/login
 
    :update-profile
-   (fn [{:keys [queue]} data]
+   (fn [{:keys [queue]} _]
      (dispatch queue [:login-submit])
      (dispatch queue [:navigate [:profile]]))
 
    :clear-form-values
-   (fn [{:keys [db]} data]
+   (fn [{:keys [db]} [_ data]]
      (if (coll? data)
        (apply form/clear-value db data)
        (form/clear-value db data)))
 
    :set-form-field
-   (fn [{:keys [db]} [key field value & kvs]]
+   (fn [{:keys [db]} [_ [key field value & kvs]]]
      (apply form/set-value db key field value kvs)
      (apply form/set-dirty db key field value kvs))
 
    :set-form-error
-   (fn [{:keys [db]} [key field value & kvs]]
+   (fn [{:keys [db]} [_ [key field value & kvs]]]
      (apply form/set-error db key field value kvs))
 
    :clear-form-errors
-   (fn [{:keys [db]} data]
+   (fn [{:keys [db]} [_ data]]
      (if (coll? data)
        (do
          (apply form/clear-error db data)
@@ -42,29 +42,36 @@
          (form/clear-dirty db data))))
 
    :navigate
-   (fn [{:keys [db]} data]
+   (fn [{:keys [db]} [_ data]]
      (apply route/navigate! db data))
 
    :update-route
-   (fn [{:keys [db]} data]
+   (fn [{:keys [db]} [_ data]]
      (route/update-route db data))
 
    :store-app-data
-   (fn [{:keys [db]} [key field value]]
+   (fn [{:keys [db]} [_ [key field value]]]
      (db/store-app-data db key field value))
 
    :clear-app-data
-   (fn [{:keys [db]} [key field]]
+   (fn [{:keys [db]} [_ [key field]]]
      (db/clear-app-data db key field))
 
    :update-local-data
-   (fn [{:keys [db]} [form-id keys lookup-ref]]
+   (fn [{:keys [db]} [_ [form-id keys lookup-ref]]]
      (db/submit-data db form-id keys lookup-ref))
 
    :init
-   (fn [{:keys [queue]} data]
+   (fn [{:keys [queue]} _]
      (dispatch queue [:store-app-data [:github-client :page/title "Hoplon Github Client"]]))
 
    :explore
-   (fn [{:keys [queue db http]} [url-id url]]
-     (api/exploration http url-id url db queue))})
+   api/exploration
+
+   :done
+   (fn [{:keys [db]} [_ done-event]]
+     (javelin.datascript/set-remove db [:app/id :github-client] :loading done-event))
+
+   :loading
+   (fn [{:keys [db]} [_ loading-event]]
+     (javelin.datascript/set-add db [:app/id :github-client] :loading loading-event))})
