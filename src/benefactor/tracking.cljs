@@ -13,15 +13,31 @@
   (str/join (repeatedly n #(rand-nth base64-characteres))))
 
 (defn append-tracking
-  [tracking]
-  (if (str/blank? tracking)
-    (random-base64 3)
-    (str tracking "." (random-base64 3))))
-
-(defn track
-  [obj]
-  (vary-meta obj update ::tracking append-tracking))
+  ([] (random-base64 3))
+  ([tracking]
+   (if (str/blank? tracking)
+     (random-base64 3)
+     (str tracking "." (random-base64 3)))))
 
 (defn get-track
   [obj]
   (::tracking (meta obj)))
+
+(defn get-timestamp
+  [obj]
+  (::timestamp (meta obj)))
+
+(defn track
+  ([obj]
+   (vary-meta obj assoc
+     ::tracking (append-tracking)
+     ::timestamp (.toISOString (js/Date.))))
+  ([obj origin]
+   (if (string? origin)
+     (vary-meta obj assoc
+       ::tracking (append-tracking origin)
+       ::timestamp (.toISOString (js/Date.)))
+     (let [tracking (get-track origin)]
+       (vary-meta obj assoc
+         ::tracking (append-tracking tracking)
+         ::timestamp (.toISOString (js/Date.)))))))

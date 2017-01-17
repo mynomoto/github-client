@@ -33,8 +33,10 @@
           (recur))))))
 
 (defn dispatch
-  [queue data]
-  (async/put! queue (vary-meta data assoc :event-timestamp (.toISOString (js/Date.)))))
+  ([queue data]
+   (async/put! queue (benefactor.tracking/track data)))
+  ([queue data event-or-seed]
+   (async/put! queue (benefactor.tracking/track data event-or-seed))))
 
 (defn stop!
   [queue]

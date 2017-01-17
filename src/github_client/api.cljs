@@ -56,34 +56,34 @@
   [{:keys [db http queue current-route]} event]
   (-> (p/chain
         (login-request http {:url api-host}
-          #(dispatch queue [:loading event])
-          #(dispatch queue [:done event]))
+          #(dispatch queue [:loading event] event)
+          #(dispatch queue [:done event] event))
         benefactor.http/json-deserialize-response-body
         benefactor.http/reject-response-if-not-success
         :body
         (fn [body]
-          (dispatch queue [:update-local-data [:github-client.page.login/login [:user/token :user/username] [:user/id :github-client]]])
-          (dispatch queue [:store-app-data [:github-client :app/url body]])
-          (dispatch queue [:clear-form-errors :github-client.page.login/login])
+          (dispatch queue [:update-local-data [:github-client.page.login/login [:user/token :user/username] [:user/id :github-client]]] event)
+          (dispatch queue [:store-app-data [:github-client :app/url body]] event)
+          (dispatch queue [:clear-form-errors :github-client.page.login/login] event)
           (let [route (:domkm.silk/name @current-route)]
             (cond
-              (#{:login} route) (dispatch queue [:navigate [:index]])
-              (#{:profile-edit} route) (dispatch queue [:navigate [:profile]])
+              (#{:login} route) (dispatch queue [:navigate [:index]] event)
+              (#{:profile-edit} route) (dispatch queue [:navigate [:profile]] event)
               :else nil))))
       (p/catch (fn [err]
                  (console.log ::request-failed (obj/get err "response"))
-                 (dispatch queue [:set-form-error [:github-client.page.login/login :user/token (-> err :body :message) :user/username (-> err :body :message)]])))))
+                 (dispatch queue [:set-form-error [:github-client.page.login/login :user/token (-> err :body :message) :user/username (-> err :body :message)]] event)))))
 
 (defn exploration
   [{:keys [db http queue]} [_ [url-id url] :as event]]
   (-> (p/chain
         (request http {:url url}
-          #(dispatch queue [:loading event])
-          #(dispatch queue [:done event]))
+          #(dispatch queue [:loading event] event)
+          #(dispatch queue [:done event] event))
         benefactor.http/json-deserialize-response-body
         benefactor.http/reject-response-if-not-success
         :body
         (fn [body]
-          (dispatch queue [:store-app-data [:exploration url-id body]])))
+          (dispatch queue [:store-app-data [:exploration url-id body]] event)))
       (p/catch (fn [err]
-                 (dispatch queue [:show-error (obj/get err "response")])))))
+                 (dispatch queue [:show-error (obj/get err "response")] event)))))
