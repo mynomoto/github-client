@@ -74,4 +74,13 @@
 
    :loading
    (fn [{:keys [db]} [_ loading-event]]
-     (javelin.datascript/set-add db [:app/id :github-client] :loading loading-event))})
+     (javelin.datascript/set-add db [:app/id :github-client] :loading loading-event))
+
+   :show-flash-error
+   (fn [{:keys [db]} [_ [field value]]]
+     (db/store-app-data db :flash-error field value))
+
+   :clear-flash-error
+   (fn [{:keys [db]} [_ [field]]]
+     (db/clear-app-data db :flash-error field))
+   })

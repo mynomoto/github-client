@@ -16,12 +16,25 @@
         url-id (cell= (keyword (:url-id route)))
         url (cell= (get urls url-id))
         placeholders (cell= (safe/re-seq #"\{.*?\}" url))
-        raw? (cell true)]
+        indexed-placeholders (cell= (map-indexed vector placeholders))
+        placeholder-map (cell= (->> indexed-placeholders
+                                    (map (fn [[idx ph]] {ph (safe/keyword (:url-id route) (str idx))}))
+                                    (reduce merge {})))
+        raw? (cell true)
+        error (cell= (get (db/get-app db :flash-error) (or url-id ::not-found)))]
     (h/div
       (h/h3 (h/text "~{url-id}"))
       (h/h4 (h/text "~{url}"))
+      (when-tpl error
+        (s/columns
+          (h/div :column 12
+            (s/toast-error
+              (s/button-clear
+                :class "float-right"
+                :click #(dispatch queue [:clear-flash-error [@url-id]]))
+              (h/text "~(with-out-str (pprint/pprint error))")))))
       (h/form
-        (for-tpl [[idx ph] (cell= (map-indexed vector placeholders))]
+        (for-tpl [[idx ph] indexed-placeholders]
           (let [id (cell= (safe/keyword (:url-id route) (str idx)))]
             (s/form-group
               (s/form-label (h/text "~{ph}"))
@@ -37,12 +50,12 @@
                 :type "text"))))
         (s/form-group
           (s/button-primary
-            :click #(dispatch queue [:explore [@url-id @url]])
+            :click #(dispatch queue [:explore [@url-id @url (when (pos? (count @placeholders)) @placeholder-map)]])
             "Explore")
           (s/button
             :click #(dispatch queue [:clear-app-data [:exploration @url-id]])
             "Clear")))
-      (when-tpl (cell= (get (db/get-app db :exploration) (or url-id :not-found)))
+      (when-tpl (cell= (get (db/get-app db :exploration) (or url-id ::not-found)))
         (h/div
           (s/tab :options #{:block}
             (s/tab-item
@@ -58,6 +71,6 @@
           (if-tpl raw?
             (h/div
               (h/pre
-                (h/text "~(with-out-str (pprint/pprint (get (db/get-app db :exploration) (or url-id :not-found))))")))
+                (h/text "~(with-out-str (pprint/pprint (get (db/get-app db :exploration) (or url-id ::not-found))))")))
             (h/div
-              (cell= (benefactor.json-html/render (get (db/get-app db :exploration) (or url-id :not-found)))))))))))
+              (cell= (benefactor.json-html/render (get (db/get-app db :exploration) (or url-id ::not-found)))))))))))
