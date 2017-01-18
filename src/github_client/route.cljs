@@ -11,6 +11,7 @@
     [[:index [[]]]
      [:profile [["profile"]]]
      [:profile-edit [["profile" "edit"]]]
+     [:rate-limit [["api" "rate-limit"]]]
      [:exploration [["exploration" :url-id]]]]))
 
 (defn href

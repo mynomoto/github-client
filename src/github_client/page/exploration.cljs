@@ -1,6 +1,7 @@
 (ns github-client.page.exploration
   (:require
     [cljs.pprint :as pprint]
+    [github-client.view.layout :as layout]
     [benefactor.datascript.form :as form]
     [github-client.db :as db]
     [github-client.reducer :refer [dispatch]]
@@ -25,14 +26,7 @@
     (h/div
       (h/h3 (h/text "~{url-id}"))
       (h/h4 (h/text "~{url}"))
-      (when-tpl error
-        (s/columns
-          (h/div :column 12
-            (s/toast-error
-              (s/button-clear
-                :class "float-right"
-                :click #(dispatch queue [:clear-flash-error [@url-id]]))
-              (h/text "~(with-out-str (pprint/pprint error))")))))
+      (layout/flash-error error url-id queue)
       (h/form
         (for-tpl [[idx ph] indexed-placeholders]
           (let [id (cell= (safe/keyword (:url-id route) (str idx)))]

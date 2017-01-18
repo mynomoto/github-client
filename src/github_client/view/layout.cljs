@@ -1,8 +1,9 @@
 (ns github-client.view.layout
   (:require
+    [cljs.pprint :as pprint]
+    [github-client.config :as config]
     [github-client.reducer :refer [dispatch]]
     [github-client.route :as route]
-    [github-client.config :as config]
     [hoplon.core :as h :refer [defelem case-tpl cond-tpl for-tpl if-tpl when-tpl]]
     [hoplon.spectre-css :as s]))
 
@@ -36,3 +37,14 @@
   ((h/div :class "container grid-960")
    attr
    kids))
+
+(defn flash-error
+  [error url-id queue]
+  (when-tpl error
+    (s/columns
+      (h/div :column 12
+        (s/toast-error
+          (s/button-clear
+            :class "float-right"
+            :click #(dispatch queue [:clear-flash-error [@url-id]]))
+          (h/text "~(with-out-str (pprint/pprint error))"))))))

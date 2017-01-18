@@ -1,6 +1,7 @@
 (ns github-client.reducer
   (:require
     [benefactor.development :as dev]
+    [benefactor.tracking]
     [cljs.core.async :as async]
     [github-client.config :as config]
     [github-client.db :as db]

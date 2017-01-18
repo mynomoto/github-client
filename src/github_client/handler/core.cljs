@@ -12,9 +12,9 @@
    api/login
 
    :update-profile
-   (fn [{:keys [queue]} _]
-     (dispatch queue [:login-submit])
-     (dispatch queue [:navigate [:profile]]))
+   (fn [{:keys [queue]} event]
+     (dispatch queue [:login-submit] event)
+     (dispatch queue [:navigate [:profile]]) event)
 
    :clear-form-values
    (fn [{:keys [db]} [_ data]]

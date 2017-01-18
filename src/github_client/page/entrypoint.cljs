@@ -10,6 +10,9 @@
     [benefactor.local-storage]
     [benefactor.keycodes]))
 
+(def key->route
+  {:rate_limit_url [:rate-limit]})
+
 (defn show
   [{:keys [route db queue]}]
   (let [app (cell= (db/get-app db :github-client))
@@ -18,12 +21,13 @@
       (h/h3 "Api Entrypoint")
       (s/table :options #{:striped :hover}
         (h/thead
-          (h/tr (h/th "Key")
-          (h/th "Url")))
+          (h/tr
+            (h/th "Key")
+            (h/th "Url")))
         (h/tbody
           (for-tpl [[key _] urls]
-            (h/tr
-              (h/td (h/text "~{key}"))
-              (h/td (s/button-primary
-                      :click #(dispatch queue [:navigate [:exploration {:url-id (name @key)}]])
-                      "Explore")))))))))
+                   (h/tr
+                     (h/td (h/text "~{key}"))
+                     (h/td (s/button-primary
+                             :click #(dispatch queue [:navigate (or (key->route @key) [:exploration {:url-id (name @key)}])])
+                             "Explore")))))))))

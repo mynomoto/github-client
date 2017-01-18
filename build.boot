@@ -59,6 +59,7 @@
 
                   ;; util functions
                   [medley "0.8.4"]
+                  [com.andrewmcveigh/cljs-time "0.5.0-alpha2"]
 
                   ;; channels
                   [org.clojure/core.async "0.2.395"]]

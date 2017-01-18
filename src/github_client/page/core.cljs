@@ -7,6 +7,7 @@
     [github-client.page.entrypoint :as page.entrypoint]
     [github-client.page.exploration :as page.exploration]
     [github-client.page.login :as page.login]
+    [github-client.page.rate-limit :as page.rate-limit]
     [github-client.view.layout :as layout]
     [hoplon.core :as h :refer [defelem case-tpl cond-tpl for-tpl if-tpl when-tpl]]
     [hoplon.spectre-css :as s]
@@ -39,6 +40,10 @@
               (cell= (= :exploration (:domkm.silk/name route)))
               (h/div
                 (page.exploration/show context))
+
+              (cell= (= :rate-limit (:domkm.silk/name route)))
+              (h/div
+                (page.rate-limit/show context))
 
               :else
               (h/div
