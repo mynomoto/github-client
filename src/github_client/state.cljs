@@ -1,5 +1,6 @@
 (ns github-client.state
   (:require
+    [github-client.config :as config]
     [github-client.db :as db]
     [hoplon.core :as h]
     [javelin.datascript]
@@ -30,6 +31,8 @@
     (fn [old new]
       (set! (.-title js/document) new))))
 
+(benefactor.local-storage/get :app-version)
+(benefactor.local-storage/set! :app-version config/last-commit)
 (defn restore-and-watch-db
   []
   (some->> (benefactor.local-storage/get :db-backup)
