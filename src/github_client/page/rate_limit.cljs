@@ -26,7 +26,7 @@
   (let [url-id (cell :rate_limit_url)
         url (cell= (get (:app/url (db/get-app db :github-client)) url-id))
         data (cell= (get (db/get-app db :exploration) (or url-id ::not-found)))
-        tab (cell :show)
+        tab (cell= (:display route))
         loading? (cell= (some #{[:explore [url-id url]]} (:loading (db/get-app db :github-client))))
         error (cell= (get (db/get-app db :flash-error) (or url-id ::not-found)))]
     (cell= (when (and (not data)
@@ -46,22 +46,22 @@
         (h/div
           (s/tab :options #{:block}
             (s/tab-item
-              :click #(reset! tab :show)
+              :click #(dispatch queue [:navigate [:rate-limit {:display "show"}]])
               :css {:cursor "pointer"}
-              :options (cell= (if (= tab :show) #{:active} #{}))
+              :options (cell= (if (= tab "show") #{:active} #{}))
               "Show")
             (s/tab-item
-              :click #(reset! tab :raw)
+              :click #(dispatch queue [:navigate [:rate-limit {:display "raw"}]])
               :css {:cursor "pointer"}
-              :options (cell= (if (= tab :raw) #{:active} #{}))
+              :options (cell= (if (= tab "raw") #{:active} #{}))
               "Raw")
             (s/tab-item
-              :options (cell= (if (= tab :table) #{:active} #{}))
+              :click #(dispatch queue [:navigate [:rate-limit {:display "table"}]])
               :css {:cursor "pointer"}
-              :click #(reset! tab :table)
+              :options (cell= (if (= tab "table") #{:active} #{}))
               "Table"))
           (case-tpl tab
-            :show
+            "show"
             (h/div
               (s/table :options #{:striped :hover}
                 (h/thead
@@ -77,11 +77,11 @@
                              (h/td (h/text "~{remaining}"))
                              (h/td (h/text "~{limit}"))
                              (h/td (h/text "~(when reset (format-date reset))")))))))
-            :raw
+            "raw"
             (h/div
               (h/pre
                 (h/text "~(with-out-str (pprint/pprint data))")))
 
-            :table
+            "table"
             (h/div
               (cell= (benefactor.json-html/render data)))))))))

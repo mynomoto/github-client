@@ -2,6 +2,7 @@
   (:require
     [javelin.core :as j :refer [cell] :refer-macros [cell= defc defc=]]
     [datascript.core :as d]
+    [domkm.silk :as silk]
     [github-client.reducer :refer [dispatch]]
     [github-client.db :as db]
     [benefactor.route]))
@@ -11,8 +12,8 @@
     [[:index [[]]]
      [:profile [["profile"]]]
      [:profile-edit [["profile" "edit"]]]
-     [:rate-limit [["api" "rate-limit"]]]
-     [:exploration [["exploration" :url-id]]]]))
+     [:rate-limit [["api" "rate-limit" (silk/? :display {:display "show"})]]]
+     [:exploration [["exploration" :url-id (silk/? :display {:display "raw"})]]]]))
 
 (defn href
   ([route-name] (href route-name nil))
@@ -26,7 +27,7 @@
   [db [path route]]
   (db/store-app-data db :github-client
                      :app/path path
-                     :app/route (dissoc route :domkm.silk/routes :domkm.silk/url)))
+                     :app/route (dissoc route :domkm.silk/routes :domkm.silk/url :domkm.silk/pattern)))
 
 (defn navigate!
   ([db route-name]
@@ -37,7 +38,7 @@
      (if parsed-route
        (db/store-app-data db :github-client
                           :app/path path
-                          :app/route (dissoc parsed-route :domkm.silk/routes :domkm.silk/url))
+                          :app/route (dissoc parsed-route :domkm.silk/routes :domkm.silk/url :domkm.silk/pattern))
        (console.error ::route-not-found path)))))
 
 (defn init!

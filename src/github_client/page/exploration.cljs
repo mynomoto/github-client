@@ -15,13 +15,13 @@
   [{:keys [route db queue]}]
   (let [urls (cell= (:app/url (db/get-app db :github-client)))
         url-id (cell= (keyword (:url-id route)))
+        tab (cell= (:display route))
         url (cell= (get urls url-id))
         placeholders (cell= (safe/re-seq #"\{.*?\}" url))
         indexed-placeholders (cell= (map-indexed vector placeholders))
         placeholder-map (cell= (->> indexed-placeholders
                                     (map (fn [[idx ph]] {ph (safe/keyword (:url-id route) (str idx))}))
                                     (reduce merge {})))
-        raw? (cell true)
         error (cell= (get (db/get-app db :flash-error) (or url-id ::not-found)))]
     (h/div
       (h/h3 (h/text "~{url-id}"))
@@ -53,18 +53,20 @@
         (h/div
           (s/tab :options #{:block}
             (s/tab-item
-              :click #(reset! raw? true)
+              :click #(dispatch queue [:navigate [:exploration {:url-id (name @url-id) :display "raw"}]])
               :css {:cursor "pointer"}
-              :options (cell= (if raw? #{:active} #{}))
+              :options (cell= (if (= tab "raw") #{:active} #{}))
               "Raw")
             (s/tab-item
-              :options (cell= (if (not raw?) #{:active} #{}))
+              :options (cell= (if (= tab "table") #{:active} #{}))
               :css {:cursor "pointer"}
-              :click #(reset! raw? false)
+              :click #(dispatch queue [:navigate [:exploration {:url-id (name @url-id) :display "table"}]])
               "Table"))
-          (if-tpl raw?
+          (case-tpl tab
+            "raw"
             (h/div
               (h/pre
                 (h/text "~(with-out-str (pprint/pprint (get (db/get-app db :exploration) (or url-id ::not-found))))")))
+            "table"
             (h/div
               (cell= (benefactor.json-html/render (get (db/get-app db :exploration) (or url-id ::not-found)))))))))))
