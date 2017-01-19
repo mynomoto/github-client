@@ -84,6 +84,6 @@
         benefactor.http/reject-response-if-not-success
         :body
         (fn [body]
-          (dispatch queue [:store-app-data [:exploration url-id body]] event)))
+          (dispatch queue [:store-app-data [:api url-id body]] event)))
       (p/catch (fn [err]
                  (dispatch queue [:show-flash-error [url-id (obj/get err "response")]] event)))))

@@ -47,9 +47,9 @@
             :click #(dispatch queue [:explore [@url-id @url (when (pos? (count @placeholders)) @placeholder-map)]])
             "Explore")
           (s/button
-            :click #(dispatch queue [:clear-app-data [:exploration @url-id]])
+            :click #(dispatch queue [:clear-app-data [:api @url-id]])
             "Clear")))
-      (when-tpl (cell= (get (db/get-app db :exploration) (or url-id ::not-found)))
+      (when-tpl (cell= (get (db/get-app db :api) (or url-id ::not-found)))
         (h/div
           (s/tab :options #{:block}
             (s/tab-item
@@ -66,7 +66,7 @@
             "raw"
             (h/div
               (h/pre
-                (h/text "~(with-out-str (pprint/pprint (get (db/get-app db :exploration) (or url-id ::not-found))))")))
+                (h/text "~(with-out-str (pprint/pprint (get (db/get-app db :api) (or url-id ::not-found))))")))
             "table"
             (h/div
-              (cell= (benefactor.json-html/render (get (db/get-app db :exploration) (or url-id ::not-found)))))))))))
+              (cell= (benefactor.json-html/render (get (db/get-app db :api) (or url-id ::not-found)))))))))))

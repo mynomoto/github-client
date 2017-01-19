@@ -25,7 +25,7 @@
   [{:keys [route db queue]}]
   (let [url-id (cell :rate_limit_url)
         url (cell= (get (:app/url (db/get-app db :github-client)) url-id))
-        data (cell= (get (db/get-app db :exploration) (or url-id ::not-found)))
+        data (cell= (get (db/get-app db :api) (or url-id ::not-found)))
         tab (cell= (:display route))
         loading? (cell= (some #{[:explore [url-id url]]} (:loading (db/get-app db :github-client))))
         error (cell= (get (db/get-app db :flash-error) (or url-id ::not-found)))]
@@ -42,7 +42,7 @@
             :options (cell= (if loading? #{:loading} #{}))
             :click #(dispatch queue [:explore [@url-id @url]])
             "Refresh")))
-      (when-tpl (cell= (get (db/get-app db :exploration) (or url-id ::not-found)))
+      (when-tpl (cell= (get (db/get-app db :api) (or url-id ::not-found)))
         (h/div
           (s/tab :options #{:block}
             (s/tab-item
