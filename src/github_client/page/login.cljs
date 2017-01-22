@@ -28,8 +28,10 @@
         edit? (cell= (= :profile-edit (:domkm.silk/name route)))]
     (h/div
       (h/h3 "Github Client")
-      (h/p "You can generate a Github personal access token at "
-        (h/a :href "https://github.com/settings/tokens" :target "_blank" "Personal access token") ".")
+      (h/p
+        "You can generate a Github personal access token at "
+        (h/a :href "https://github.com/settings/tokens" :target "_blank" "Personal access token")
+        ". If you don't use two-factor authentication you can use your password instead.")
       (h/p "Github API docs can be found at "
         (h/a :href "https://developer.github.com/v3/" :target "_blank" "Github Developer") ".")
       (s/card

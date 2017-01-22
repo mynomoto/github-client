@@ -38,7 +38,8 @@
 
 (defn init! []
   (enable-console-print!)
-  (state/restore-and-watch-db)
+  (state/try-restore-db state/db state/schema)
+  (state/backup-db state/db)
   (state/start-sync-title)
   (h/do-watch state/title
     (fn [old new]
