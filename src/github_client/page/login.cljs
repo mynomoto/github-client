@@ -25,7 +25,7 @@
         token (cell= (:user/token (db/get-user db)))
         login? (cell= (or (str/blank? (:user/token user))
                           (str/blank? (:user/username user))))
-        edit? (cell= (= :profile-edit (:domkm.silk/name route)))]
+        edit? (cell= (= :profile-edit (:handler route)))]
     (h/div
       (h/h3 "Github Client")
       (h/p
@@ -96,19 +96,19 @@
                        (dispatch queue [:login-submit]))
               "Sign in")
             (s/button-primary
-              :toggle (cell= (and (#{:profile} (:domkm.silk/name route))
+              :toggle (cell= (and (#{:profile} (:handler route))
                                   (not login?)))
               :click (fn [_]
                        (dispatch queue [:navigate [:profile-edit]]))
               "Edit")
             (s/button-primary
-              :toggle (cell= (and (#{:profile-edit} (:domkm.silk/name route))
+              :toggle (cell= (and (#{:profile-edit} (:handler route))
                                   (not login?)))
               :click (fn [_]
                        (dispatch queue [:login-submit]))
               "Save")
             (s/button
-              :toggle (cell= (and (#{:profile-edit} (:domkm.silk/name route))
+              :toggle (cell= (and (#{:profile-edit} (:handler route))
                                   (not login?)))
               :click (fn [_]
                        (dispatch queue [:clear-form-values ::login])

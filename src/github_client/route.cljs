@@ -1,19 +1,22 @@
 (ns github-client.route
   (:require
-    [javelin.core :as j :refer [cell] :refer-macros [cell= defc defc=]]
+    [benefactor.route]
+    [bidi.bidi :as bidi]
     [datascript.core :as d]
-    [domkm.silk :as silk]
-    [github-client.reducer :refer [dispatch]]
     [github-client.db :as db]
-    [benefactor.route]))
+    [github-client.reducer :refer [dispatch]]
+    [javelin.core :as j :refer [cell] :refer-macros [cell= defc defc=]]))
 
 (def routes
-  (benefactor.route/create
-    [[:index [[]]]
-     [:profile [["profile"]]]
-     [:profile-edit [["profile" "edit"]]]
-     [:rate-limit [["api" "rate-limit" (silk/? :display {:display "show"})]]]
-     [:exploration [["exploration" :url-id (silk/? :display {:display "raw"})]]]]))
+  ["" [["" :index]
+       ["/"
+        [["" :index]
+         ["profile" :profile]
+         [["profile/" "edit"] :profile-edit]
+         [["api/" "rate-limit/" [#"show|raw|table" :display]] :rate-limit]
+         ["version" :app-version]
+         [["exploration/" :url-id "/" [#"raw|table" :display]] :exploration]
+         [true :not-found]]]]])
 
 (defn href
   ([route-name] (href route-name nil))
@@ -27,18 +30,18 @@
   [db [path route]]
   (db/store-app-data db :github-client
                      :app/path path
-                     :app/route (dissoc route :domkm.silk/routes :domkm.silk/url :domkm.silk/pattern)))
+                     :app/route route))
 
 (defn navigate!
   ([db route-name]
    (navigate! db route-name nil))
   ([db route-name params]
-   (let [path (benefactor.route/hash->path (href route-name params))
+   (let [path (href route-name params)
          parsed-route (path->route path)]
      (if parsed-route
        (db/store-app-data db :github-client
                           :app/path path
-                          :app/route (dissoc parsed-route :domkm.silk/routes :domkm.silk/url :domkm.silk/pattern))
+                          :app/route parsed-route)
        (console.error ::route-not-found path)))))
 
 (defn init!
@@ -46,4 +49,5 @@
   [queue current-route]
   (benefactor.route/setup-router
     routes
-    #(when (not= @current-route (first %)) (dispatch queue [:update-route %]))))
+    #(when (not= @current-route (first %)) (dispatch queue [:update-route %]))
+    #(dispatch queue [:route-not-found (benefactor.route/path->hash %)])))

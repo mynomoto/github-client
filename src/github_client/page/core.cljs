@@ -28,23 +28,27 @@
           (h/div
             :column 12
             (cond-tpl
-              (cell= (or (#{:profile-edit :profile} (:domkm.silk/name route))
+              (cell= (or (#{:profile-edit :profile} (:handler route))
                          (str/blank? (:user/token (db/get-user db)))
                          (str/blank? (:user/username (db/get-user db)))))
               (page.login/show context)
 
-              (cell= (= :index (:domkm.silk/name route)))
+              (cell= (= :index (:handler route)))
               (h/div
                 (page.entrypoint/show context))
 
-              (cell= (= :exploration (:domkm.silk/name route)))
+              (cell= (= :exploration (:handler route)))
               (h/div
                 (page.exploration/show context))
 
-              (cell= (= :rate-limit (:domkm.silk/name route)))
+              (cell= (= :rate-limit (:handler route)))
               (h/div
                 (page.rate-limit/show context))
 
-              :else
+              (cell= (= :app-version (:handler route)))
               (h/div
-                (h/h1 "Not found")))))))))
+                (h/h1 "Version")
+                (h/pre config/last-commit))
+
+              :else
+              (h/div (h/h1 "Not found")))))))))

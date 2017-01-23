@@ -65,7 +65,7 @@
           (dispatch queue [:update-local-data [:github-client.page.login/login [:user/token :user/username] [:user/id :github-client]]] event)
           (dispatch queue [:store-app-data [:github-client :app/url body]] event)
           (dispatch queue [:clear-form-errors :github-client.page.login/login] event)
-          (let [route (:domkm.silk/name @current-route)]
+          (let [route (:handler @current-route)]
             (cond
               (#{:login} route) (dispatch queue [:navigate [:index]] event)
               (#{:profile-edit} route) (dispatch queue [:navigate [:profile]] event)

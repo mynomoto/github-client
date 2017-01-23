@@ -54,9 +54,6 @@
                   [funcool/httpurr "0.6.2"]
                   [funcool/promesa "1.7.0"]
 
-                  ;; routes
-                  [com.domkm/silk "0.1.2"]
-
                   ;; util functions
                   [medley "0.8.4"]
                   [com.andrewmcveigh/cljs-time "0.5.0-alpha2"]

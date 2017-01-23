@@ -14,13 +14,13 @@
 (defn show
   [{:keys [route db queue]}]
   (let [urls (cell= (:app/url (db/get-app db :github-client)))
-        url-id (cell= (keyword (:url-id route)))
-        tab (cell= (:display route))
+        url-id (cell= (keyword (-> route :route-params :url-id)))
+        tab (cell= (-> route :route-params :display))
         url (cell= (get urls url-id))
         placeholders (cell= (safe/re-seq #"\{.*?\}" url))
         indexed-placeholders (cell= (map-indexed vector placeholders))
         placeholder-map (cell= (->> indexed-placeholders
-                                    (map (fn [[idx ph]] {ph (safe/keyword (:url-id route) (str idx))}))
+                                    (map (fn [[idx ph]] {ph (safe/keyword (-> route :route-params :url-id) (str idx))}))
                                     (reduce merge {})))
         error (cell= (get (db/get-app db :flash-error) (or url-id ::not-found)))]
     (h/div

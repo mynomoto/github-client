@@ -1,5 +1,6 @@
 (ns github-client.core
   (:require
+    [benefactor.route]
     [github-client.db :as db]
     [github-client.handler.core :as handler]
     [github-client.page.core :as page]

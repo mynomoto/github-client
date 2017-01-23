@@ -30,7 +30,7 @@
         loading? (cell= (some #{[:explore [url-id url]]} (:loading (db/get-app db :github-client))))
         error (cell= (get (db/get-app db :flash-error) (or url-id ::not-found)))]
     (cell= (when (and (not data)
-                      (= (:domkm.silk/name route) :rate-limit))
+                      (= (:handler route) :rate-limit))
              (dispatch queue [:explore [url-id url]])))
     (h/div
       (h/h3 "Rate Limit")

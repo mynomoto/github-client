@@ -29,5 +29,5 @@
                    (h/tr
                      (h/td (h/text "~{key}"))
                      (h/td (s/button-primary
-                             :click #(dispatch queue [:navigate (or (key->route @key) [:exploration {:url-id (name @key)}])])
+                             :click #(dispatch queue [:navigate (or (key->route @key) [:exploration {:url-id (name @key) :display "raw"}])])
                              "Explore")))))))))
