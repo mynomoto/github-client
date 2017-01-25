@@ -15,7 +15,7 @@
   [{:keys [route db queue]}]
   (let [urls (cell= (:app/url (db/get-app db :github-client)))
         url-id (cell= (keyword (-> route :route-params :url-id)))
-        tab (cell= (-> route :route-params :display))
+        tab (cell= (-> route :query-params (get "display")))
         url (cell= (get urls url-id))
         placeholders (cell= (safe/re-seq #"\{.*?\}" url))
         indexed-placeholders (cell= (map-indexed vector placeholders))
@@ -53,14 +53,14 @@
         (h/div
           (s/tab :options #{:block}
             (s/tab-item
-              :click #(dispatch queue [:navigate [:exploration {:url-id (name @url-id) :display "raw"}]])
+              :click #(dispatch queue [:navigate [:exploration {:url-id (name @url-id) :query-params {:display "raw"}}]])
               :css {:cursor "pointer"}
               :options (cell= (if (= tab "raw") #{:active} #{}))
               "Raw")
             (s/tab-item
               :options (cell= (if (= tab "table") #{:active} #{}))
               :css {:cursor "pointer"}
-              :click #(dispatch queue [:navigate [:exploration {:url-id (name @url-id) :display "table"}]])
+              :click #(dispatch queue [:navigate [:exploration {:url-id (name @url-id) :query-params {:display "table"}}]])
               "Table"))
           (case-tpl tab
             "raw"

@@ -13,9 +13,9 @@
         [["" :index]
          ["profile" :profile]
          [["profile/" "edit"] :profile-edit]
-         [["api/" "rate-limit/" [#"show|raw|table" :display]] :rate-limit]
+         [["api/" "rate-limit"] :rate-limit]
          ["version" :app-version]
-         [["exploration/" :url-id "/" [#"raw|table" :display]] :exploration]
+         [["exploration/" :url-id] :exploration]
          [true :not-found]]]]])
 
 (defn href

@@ -26,7 +26,7 @@
   (let [url-id (cell :rate_limit_url)
         url (cell= (get (:app/url (db/get-app db :github-client)) url-id))
         data (cell= (get (db/get-app db :api) (or url-id ::not-found)))
-        tab (cell= (:display route))
+        tab (cell= (-> route :query-params (get "display")))
         loading? (cell= (some #{[:explore [url-id url]]} (:loading (db/get-app db :github-client))))
         error (cell= (get (db/get-app db :flash-error) (or url-id ::not-found)))]
     (cell= (when (and (not data)
@@ -46,17 +46,17 @@
         (h/div
           (s/tab :options #{:block}
             (s/tab-item
-              :click #(dispatch queue [:navigate [:rate-limit {:display "show"}]])
+              :click #(dispatch queue [:navigate [:rate-limit {:query-params {:display "show"}}]])
               :css {:cursor "pointer"}
               :options (cell= (if (= tab "show") #{:active} #{}))
               "Show")
             (s/tab-item
-              :click #(dispatch queue [:navigate [:rate-limit {:display "raw"}]])
+              :click #(dispatch queue [:navigate [:rate-limit {:query-params {:display "raw"}}]])
               :css {:cursor "pointer"}
               :options (cell= (if (= tab "raw") #{:active} #{}))
               "Raw")
             (s/tab-item
-              :click #(dispatch queue [:navigate [:rate-limit {:display "table"}]])
+              :click #(dispatch queue [:navigate [:rate-limit {:query-params {:display "table"}}]])
               :css {:cursor "pointer"}
               :options (cell= (if (= tab "table") #{:active} #{}))
               "Table"))

@@ -11,7 +11,7 @@
     [benefactor.keycodes]))
 
 (def key->route
-  {:rate_limit_url [:rate-limit]})
+  {:rate_limit_url [:rate-limit {:query-params {:display "show"}}]})
 
 (defn show
   [{:keys [route db queue]}]
@@ -29,5 +29,5 @@
                    (h/tr
                      (h/td (h/text "~{key}"))
                      (h/td (s/button-primary
-                             :click #(dispatch queue [:navigate (or (key->route @key) [:exploration {:url-id (name @key) :display "raw"}])])
+                             :click #(dispatch queue [:navigate (or (key->route @key) [:exploration {:url-id (name @key) :query-params {:display "raw"}}])])
                              "Explore")))))))))
