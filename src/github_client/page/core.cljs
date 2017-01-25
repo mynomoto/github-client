@@ -7,6 +7,7 @@
     [github-client.page.entrypoint :as page.entrypoint]
     [github-client.page.exploration :as page.exploration]
     [github-client.page.login :as page.login]
+    [github-client.page.emoji :as page.emoji]
     [github-client.page.rate-limit :as page.rate-limit]
     [github-client.view.layout :as layout]
     [hoplon.core :as h :refer [defelem case-tpl cond-tpl for-tpl if-tpl when-tpl]]
@@ -44,6 +45,10 @@
               (cell= (= :rate-limit (:handler route)))
               (h/div
                 (page.rate-limit/show context))
+
+              (cell= (= :emoji (:handler route)))
+              (h/div
+                (page.emoji/show context))
 
               (cell= (= :app-version (:handler route)))
               (h/div

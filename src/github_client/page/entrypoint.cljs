@@ -11,7 +11,8 @@
     [benefactor.keycodes]))
 
 (def key->route
-  {:rate_limit_url [:rate-limit {:query-params {:display "show"}}]})
+  {:rate_limit_url [:rate-limit {:query-params {:display "show"}}]
+   :emojis_url [:emoji {:query-params {:display "show"}}]})
 
 (defn show
   [{:keys [route db queue]}]

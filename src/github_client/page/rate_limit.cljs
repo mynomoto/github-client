@@ -1,8 +1,6 @@
 (ns github-client.page.rate-limit
   (:require
-    [benefactor.datascript.form :as form]
     [benefactor.json-html]
-    [benefactor.safe :as safe]
     [cljs.pprint :as pprint]
     [cljs-time.coerce]
     [cljs-time.core]

@@ -14,6 +14,7 @@
          ["profile" :profile]
          [["profile/" "edit"] :profile-edit]
          [["api/" "rate-limit"] :rate-limit]
+         [["api/" "emoji"] :emoji]
          ["version" :app-version]
          [["exploration/" :url-id] :exploration]
          [true :not-found]]]]])
