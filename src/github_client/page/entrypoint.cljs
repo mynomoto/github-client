@@ -16,8 +16,7 @@
 
 (defn show
   [{:keys [route db queue]}]
-  (let [app (cell= (db/get-app db :github-client))
-        urls (cell= (sort-by first (:app/url app)))]
+  (let [urls (cell= (sort-by first (:app/url (db/get-app db :github-client))))]
     (h/div
       (h/h3 "Api Entrypoint")
       (s/table :options #{:striped :hover}
