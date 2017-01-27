@@ -2,6 +2,7 @@
   (:require
     [benefactor.datascript.form :as form]
     [benefactor.json-html]
+    [benefactor.keycodes]
     [benefactor.safe :as safe]
     [cljs.pprint :as pprint]
     [github-client.db :as db]
