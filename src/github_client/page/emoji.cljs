@@ -82,7 +82,12 @@
         filtered-data (cell= (sort (filter (search-match search) data)))
         paginated  (cell= (vec (partition-all per-page filtered-data)))
         last-page  (cell= (count paginated))
-        paged-data (cell= (current-page paginated page))
+        paged-data* (cell= (current-page paginated page))
+        paged-data (cell [])
+        _ (cell= (when paged-data*
+                   (reset! ~(cell paged-data) (map (fn [_] ["" "loading.gif"]) (range (count paged-data*))))
+                   (h/with-timeout 0
+                     (reset! ~(cell paged-data) paged-data*))))
         loading? (cell= (some #{[:explore [url-id url]]} (:loading (db/get-app db :github-client))))
         error (cell= (get (db/get-app db :flash-error) (or url-id ::not-found)))]
     (cell= (when (and (not data)

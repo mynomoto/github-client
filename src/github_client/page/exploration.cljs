@@ -1,14 +1,14 @@
 (ns github-client.page.exploration
   (:require
-    [cljs.pprint :as pprint]
-    [github-client.view.layout :as layout]
     [benefactor.datascript.form :as form]
-    [github-client.db :as db]
-    [github-client.reducer :refer [dispatch]]
-    [hoplon.core :as h :refer [defelem case-tpl cond-tpl for-tpl if-tpl when-tpl]]
-    [hoplon.spectre-css :as s]
     [benefactor.json-html]
     [benefactor.safe :as safe]
+    [cljs.pprint :as pprint]
+    [github-client.db :as db]
+    [github-client.reducer :refer [dispatch]]
+    [github-client.view.layout :as layout]
+    [hoplon.core :as h :refer [defelem case-tpl cond-tpl for-tpl if-tpl when-tpl]]
+    [hoplon.spectre-css :as s]
     [javelin.core :as j :refer [cell] :refer-macros [cell= defc defc=]]))
 
 (defn show
