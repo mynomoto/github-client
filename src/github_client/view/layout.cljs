@@ -73,10 +73,10 @@
   ([page last-page per-page queue search route params]
    (let [hfn (fn [f page]
                #(let [go-to-page (f @page)]
-                  (dispatch queue [:navigate [route (merge-with merge params {:query-params {:display "show"
-                                                                                             :search @search
-                                                                                             :page go-to-page
-                                                                                             :per-page @per-page}})]])))]
+                  (dispatch queue [:navigate [route (merge-with merge {:query-params {:display "show"
+                                                                                      :search @search
+                                                                                      :page go-to-page
+                                                                                      :per-page @per-page}} params)]])))]
      (s/pagination
        (page-link "Previous" (hfn #(max 1 (dec %)) page) false true (cell= (= 1 page)))
        (page-link "1" (hfn (fn [x] 1) page) false (cell= (not= page 1)))

@@ -1,6 +1,7 @@
 (ns github-client.page.emoji
   (:require
     [benefactor.json-html]
+    [benefactor.search]
     [clojure.string :as str]
     [cljs.pprint :as pprint]
     [cljs-time.coerce]
@@ -13,44 +14,46 @@
     [hoplon.spectre-css :as s]
     [javelin.core :as j :refer [cell] :refer-macros [cell= defc defc=]]))
 
-(defn is-substring?
-  [string substring]
-  (when (and (string? string) (string? substring))
-    (not= -1 (.indexOf string substring))))
-
-(defn search-match
-  [search-term]
-  (let [lc-search-term (str/lower-case search-term)]
-    (fn [[key val]]
-      (if (<= 1 (count lc-search-term))
-        (is-substring? (name key) lc-search-term)
-        true))))
-
 (defn- current-page
   [paginated-vector page]
   (get paginated-vector (dec page)))
+
+(defn display
+  [route]
+  (-> route :query-params (get "display")))
+
+(defn per-page
+  [route]
+  (-> route :query-params (get "per-page" "20") js/parseInt))
+
+(defn search
+  [route]
+  (-> route :query-params (get "search" "")))
+
+(defn paginate
+  [per-page data]
+  (vec (partition-all per-page data)))
 
 (defn show
   [{:keys [route db queue]}]
   (let [url-id (cell :emojis_url)
         url (cell= (get (:app/url (db/get-app db :github-client)) url-id))
         data (cell= (get (db/get-app db :api) (or url-id ::not-found)))
-        tab (cell= (-> route :query-params (get "display")))
-        per-page (cell= (-> route :query-params (get "per-page" "20") js/parseInt))
-        search (cell= (-> route :query-params (get "search" "")))
-        filtered-data (cell= (sort (filter (search-match search) data)))
-        paginated  (cell= (vec (partition-all per-page filtered-data)))
-        last-page  (cell= (count paginated))
-        page (cell= (-> route :query-params (get "page" "1") js/parseInt (min last-page)))
-        _ (cell= (console.log :page page))
-        paged-data* (cell= (current-page paginated page))
+        display (cell= (display route))
+        per-page (cell= (per-page route))
+        search (cell= (search route))
+        filtered-data (cell= (sort (filter #(benefactor.search/match? search (name (first %))) data)))
+        paginated-data  (cell= (paginate per-page filtered-data))
+        last-page  (cell= (count paginated-data))
+        page (cell= (-> route :query-params (get "page" "1") js/parseInt (min last-page) (max 1)))
+        paged-data* (cell= (current-page paginated-data page))
         paged-data (cell [])
-        _ (cell= (when paged-data*
-                   (reset! ~(cell paged-data) (map (fn [_] ["" "loading.gif"]) (range (count paged-data*))))
-                   (h/with-timeout 0
-                     (reset! ~(cell paged-data) paged-data*))))
         loading? (cell= (some #{[:explore [url-id url]]} (:loading (db/get-app db :github-client))))
         error (cell= (get (db/get-app db :flash-error) (or url-id ::not-found)))]
+    (cell= (when paged-data*
+             (reset! ~(cell paged-data) (map (fn [_] ["" "loading.gif"]) (range (count paged-data*))))
+             (h/with-timeout 0
+               (reset! ~(cell paged-data) paged-data*))))
     (cell= (when (and (not data)
                       (= (:handler route) :emoji))
              (dispatch queue [:explore [url-id url]])))
@@ -70,19 +73,19 @@
             (s/tab-item
               :click #(dispatch queue [:navigate [:emoji {:query-params {:display "show"}}]])
               :css {:cursor "pointer"}
-              :options (cell= (if (= tab "show") #{:active} #{}))
+              :options (cell= (if (= display "show") #{:active} #{}))
               "Show")
             (s/tab-item
               :click #(dispatch queue [:navigate [:emoji {:query-params {:display "raw"}}]])
               :css {:cursor "pointer"}
-              :options (cell= (if (= tab "raw") #{:active} #{}))
+              :options (cell= (if (= display "raw") #{:active} #{}))
               "Raw")
             (s/tab-item
               :click #(dispatch queue [:navigate [:emoji {:query-params {:display "table"}}]])
               :css {:cursor "pointer"}
-              :options (cell= (if (= tab "table") #{:active} #{}))
+              :options (cell= (if (= display "table") #{:active} #{}))
               "Table"))
-          (case-tpl tab
+          (case-tpl display
             "show"
             (h/div
               (h/form
@@ -93,16 +96,19 @@
                     :value search
                     :keyup #(dispatch queue [:navigate [:emoji {:query-params {:display "show" :search @%}}]])
                     :placeholder "Search")))
+              (layout/pagination page last-page per-page queue search :emoji)
               (s/table :options #{:striped :hover}
                 (h/thead
                   (h/tr
                     (h/th "Identifier")
-                    (h/th "Emoji")))
+                    (h/th "Emoji")
+                    (h/th "URL")))
                 (h/tbody
                   (for-tpl [[key src] paged-data]
                            (h/tr
                              (h/td (h/text "~(some-> key name)"))
-                             (h/td (s/img :src src))))))
+                             (h/td (s/img :css {:width "64" :height "64"} :src src))
+                             (h/td (h/text "~{src}"))))))
               (layout/pagination page last-page per-page queue search :emoji))
 
             "raw"
@@ -112,4 +118,6 @@
 
             "table"
             (h/div
-              (cell= (benefactor.json-html/render data)))))))))
+              (layout/pagination page last-page per-page queue search :emoji {:query-params {:display "table"}})
+              (cell= (benefactor.json-html/render (into {} paged-data)))
+              (layout/pagination page last-page per-page queue search :emoji {:query-params {:display "table"}}))))))))
