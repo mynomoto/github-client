@@ -88,14 +88,11 @@
           (case-tpl display
             "show"
             (h/div
-              (h/form
-                (s/form-group
-                  (s/form-label "Search")
-                  (s/input
-                    :type "text"
-                    :value search
-                    :keyup #(dispatch queue [:navigate [:emoji {:query-params {:display "show" :search @%}}]])
-                    :placeholder "Search")))
+              (s/input
+                :type "text"
+                :value search
+                :keyup #(dispatch queue [:navigate [:emoji {:query-params {:display "show" :search @%}}]])
+                :placeholder "Search")
               (layout/pagination page last-page per-page queue search :emoji)
               (s/table :options #{:striped :hover}
                 (h/thead
@@ -119,5 +116,5 @@
             "table"
             (h/div
               (layout/pagination page last-page per-page queue search :emoji {:query-params {:display "table"}})
-              (cell= (benefactor.json-html/render (into {} paged-data)))
+              (cell= (benefactor.json-html/render (into (sorted-map) paged-data*)))
               (layout/pagination page last-page per-page queue search :emoji {:query-params {:display "table"}}))))))))
