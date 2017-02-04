@@ -30,7 +30,7 @@
                   ;; Hoplon
                   [hoplon "6.0.0-alpha17" :scope "compile"]
                   [hoplon/javelin "3.9.0" :scope "compile"]
-                  [mynomoto/hoplon-spectre.css "0.1.0" :scope "compile"]
+                  [mynomoto/hoplon-spectre.css "0.1.32-0" :scope "compile"]
 
                   [benefactor "0.0.1-SNAPSHOT"]
                   ;; Better devtools for Clojurescript
@@ -86,15 +86,16 @@
   []
   (try (clean?) (catch Throwable _)))
 
-(deftask hoplon-cards []
-  (merge-env! :resource-paths #{"hoplon_cards"})
-  identity)
+(defn hoplon-cards
+  []
+  (merge-env! :resource-paths #{"hoplon_cards"}))
 
 (deftask dev
   []
   "Build github-clieent for development."
+  (hoplon-cards)
   (comp
-    (hoplon-cards)
+    (sift :add-jar {'mynomoto/hoplon-spectre.css #"spectre\.min\.css"})
     (watch)
     (speak)
     (cljs-devtools)

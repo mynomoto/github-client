@@ -11,9 +11,13 @@
 (defn navbar
   [{:keys [queue]}]
   (s/navbar
-    :css {:background-color "#efefef"}
     (s/navbar-section
       (s/navbar-title-link
+        :css {:font-size "2rem"
+              :font-weight "bold"
+              :padding-right "2rem"
+              :text-decoration "none"
+              :vertical-align "middle"}
         :href (route/href :index)
         :click #(do
                   (.preventDefault %)
