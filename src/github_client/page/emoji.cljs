@@ -1,6 +1,7 @@
 (ns github-client.page.emoji
   (:require
     [benefactor.json-html]
+    [benefactor.pagination]
     [benefactor.search]
     [clojure.string :as str]
     [cljs.pprint :as pprint]
@@ -14,39 +15,20 @@
     [hoplon.spectre-css :as s]
     [javelin.core :as j :refer [cell] :refer-macros [cell= defc defc=]]))
 
-(defn- current-page
-  [paginated-vector page]
-  (get paginated-vector (dec page)))
-
-(defn display
-  [route]
-  (-> route :query-params (get "display")))
-
-(defn per-page
-  [route]
-  (-> route :query-params (get "per-page" "20") js/parseInt))
-
-(defn search
-  [route]
-  (-> route :query-params (get "search" "")))
-
-(defn paginate
-  [per-page data]
-  (vec (partition-all per-page data)))
 
 (defn show
   [{:keys [route db queue]}]
   (let [url-id (cell :emojis_url)
         url (cell= (get (:app/url (db/get-app db :github-client)) url-id))
         data (cell= (get (db/get-app db :api) (or url-id ::not-found)))
-        display (cell= (display route))
-        per-page (cell= (per-page route))
-        search (cell= (search route))
+        display (cell= (benefactor.pagination/display route))
+        per-page (cell= (benefactor.pagination/per-page route))
+        search (cell= (benefactor.pagination/search route))
         filtered-data (cell= (sort (filter #(benefactor.search/match? search (name (first %))) data)))
-        paginated-data  (cell= (paginate per-page filtered-data))
+        paginated-data  (cell= (benefactor.pagination/paginate per-page filtered-data))
         last-page  (cell= (count paginated-data))
         page (cell= (-> route :query-params (get "page" "1") js/parseInt (min last-page) (max 1)))
-        paged-data* (cell= (current-page paginated-data page))
+        paged-data* (cell= (benefactor.pagination/current-page paginated-data page))
         paged-data (cell [])
         loading? (cell= (some #{[:explore [url-id url]]} (:loading (db/get-app db :github-client))))
         error (cell= (get (db/get-app db :flash-error) (or url-id ::not-found)))]
@@ -110,8 +92,10 @@
 
             "raw"
             (h/div
+              (layout/pagination page last-page per-page queue search :emoji {:query-params {:display "raw"}})
               (h/pre
-                (h/text "~(with-out-str (pprint/pprint data))")))
+                (h/text "~(with-out-str (pprint/pprint paged-data*))"))
+              (layout/pagination page last-page per-page queue search :emoji {:query-params {:display "raw"}}))
 
             "table"
             (h/div

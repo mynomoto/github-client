@@ -1,5 +1,5 @@
 (ns benefactor.safe
-  (:refer-clojure :exclude [keyword re-seq]))
+  (:refer-clojure :exclude [keyword re-seq name]))
 
 (defn re-seq
   [re s]
@@ -14,3 +14,8 @@
      (when (and (not-empty ns)
                 (not-empty name))
        (clojure.core/keyword ns name)))) )
+
+(defn name
+  [x]
+  (when x
+    (clojure.core/name x)))

@@ -1,6 +1,7 @@
 (ns github-client.api
   (:require
     [benefactor.http]
+    [clojure.string :as str]
     [github-client.db :as db]
     [github-client.reducer :refer [dispatch]]
     [github-client.route :as route]
@@ -75,15 +76,21 @@
                  (dispatch queue [:set-form-error [:github-client.page.login/login :user/token (-> err :body :message) :user/username (-> err :body :message)]] event)))))
 
 (defn exploration
-  [{:keys [db http queue]} [_ [url-id url] :as event]]
-  (-> (p/chain
-        (request http {:url url}
-          #(dispatch queue [:loading event] event)
-          #(dispatch queue [:done event] event))
-        benefactor.http/json-deserialize-response-body
-        benefactor.http/reject-response-if-not-success
-        :body
-        (fn [body]
-          (dispatch queue [:store-app-data [:api url-id body]] event)))
-      (p/catch (fn [err]
-                 (dispatch queue [:show-flash-error [url-id (obj/get err "response")]] event)))))
+  [{:keys [db http queue]} [_ [url-id url interpolation] :as event]]
+  (let [url (if (empty? interpolation)
+              url
+              (reduce (fn [acc [s k]]
+                        (if-let [v (form/value @db :github-client.page.exploration/exploration k)]
+                          (str/replace acc s v)
+                          (str/replace acc s ""))) url interpolation))]
+    (-> (p/chain
+          (request http {:url url}
+            #(dispatch queue [:loading event] event)
+            #(dispatch queue [:done event] event))
+          benefactor.http/json-deserialize-response-body
+          benefactor.http/reject-response-if-not-success
+          :body
+          (fn [body]
+            (dispatch queue [:store-app-data [:api url-id body]] event)))
+        (p/catch (fn [err]
+                   (dispatch queue [:show-flash-error [url-id (obj/get err "response")]] event))))))

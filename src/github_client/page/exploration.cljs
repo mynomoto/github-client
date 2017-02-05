@@ -16,7 +16,13 @@
   [{:keys [route db queue]}]
   (let [urls (cell= (:app/url (db/get-app db :github-client)))
         url-id (cell= (keyword (-> route :route-params :url-id)))
-        tab (cell= (-> route :query-params (get "display")))
+        data (cell= (get (db/get-app db :api) (or url-id ::not-found)))
+        display (cell= (benefactor.pagination/display route))
+        per-page (cell= (benefactor.pagination/per-page route))
+        paginated-data  (cell= (benefactor.pagination/paginate per-page data))
+        last-page  (cell= (count paginated-data))
+        page (cell= (-> route :query-params (get "page" "1") js/parseInt (min last-page) (max 1)))
+        paged-data (cell= (benefactor.pagination/current-page paginated-data page))
         url (cell= (get urls url-id))
         placeholders (cell= (safe/re-seq #"\{.*?\}" url))
         indexed-placeholders (cell= (map-indexed vector placeholders))
@@ -30,7 +36,7 @@
       (layout/flash-error error url-id queue)
       (h/form
         (for-tpl [[idx ph] indexed-placeholders]
-          (let [id (cell= (safe/keyword (:url-id route) (str idx)))]
+          (let [id (cell= (safe/keyword (safe/name url-id) (str idx)))]
             (s/form-group
               (s/form-label (h/text "~{ph}"))
               (s/input
@@ -50,24 +56,28 @@
           (s/button
             :click #(dispatch queue [:clear-app-data [:api @url-id]])
             "Clear")))
-      (when-tpl (cell= (get (db/get-app db :api) (or url-id ::not-found)))
+      (when-tpl (cell= data)
         (h/div
           (s/tab :options #{:block}
             (s/tab-item
               :click #(dispatch queue [:navigate [:exploration {:url-id (name @url-id) :query-params {:display "raw"}}]])
               :css {:cursor "pointer"}
-              :options (cell= (if (= tab "raw") #{:active} #{}))
+              :options (cell= (if (= display "raw") #{:active} #{}))
               "Raw")
             (s/tab-item
-              :options (cell= (if (= tab "table") #{:active} #{}))
+              :options (cell= (if (= display "table") #{:active} #{}))
               :css {:cursor "pointer"}
               :click #(dispatch queue [:navigate [:exploration {:url-id (name @url-id) :query-params {:display "table"}}]])
               "Table"))
-          (case-tpl tab
+          (case-tpl display
             "raw"
             (h/div
+              (layout/pagination page last-page per-page queue nil :exploration (cell= {:url-id (name url-id) :query-params {:display "raw"}}))
               (h/pre
-                (h/text "~(with-out-str (pprint/pprint (get (db/get-app db :api) (or url-id ::not-found))))")))
+                (h/text "~(with-out-str (pprint/pprint paged-data))"))
+              (layout/pagination page last-page per-page queue nil :exploration (cell= {:url-id (name url-id) :query-params {:display "raw"}})))
             "table"
             (h/div
-              (cell= (benefactor.json-html/render (get (db/get-app db :api) (or url-id ::not-found)))))))))))
+              (layout/pagination page last-page per-page queue nil :exploration (cell= {:url-id (name url-id) :query-params {:display "table"}}))
+              (cell= (benefactor.json-html/render paged-data))
+              (layout/pagination page last-page per-page queue nil :exploration (cell= {:url-id (name url-id) :query-params {:display "table"}})))))))))

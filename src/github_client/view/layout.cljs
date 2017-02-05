@@ -1,6 +1,7 @@
 (ns github-client.view.layout
   (:require
     [cljs.pprint :as pprint]
+    [clojure.string :as str]
     [github-client.config :as config]
     [github-client.reducer :refer [dispatch]]
     [github-client.route :as route]
@@ -14,6 +15,7 @@
     (s/navbar-section
       (s/navbar-title-link
         :css {:font-size "2rem"
+              :padding-left "2rem"
               :font-weight "bold"
               :padding-right "2rem"
               :text-decoration "none"
@@ -76,11 +78,17 @@
    (pagination page last-page per-page queue search route nil))
   ([page last-page per-page queue search route params]
    (let [hfn (fn [f page]
-               #(let [go-to-page (f @page)]
-                  (dispatch queue [:navigate [route (merge-with merge {:query-params {:display "show"
-                                                                                      :search @search
-                                                                                      :page go-to-page
-                                                                                      :per-page @per-page}} params)]])))]
+               #(let [go-to-page (f @page)
+                      default-query-params {:display "show"
+                                            :page go-to-page
+                                            :per-page @per-page}
+                      query-params (cond
+                                     (j/cell? search) (if (str/blank? @search)
+                                                      default-query-params
+                                                      (assoc default-query-params :search @search))
+                                     (nil? search) default-query-params
+                                     :else (assoc default-query-params :search search))]
+                  (dispatch queue [:navigate [route (merge-with merge {:query-params query-params} (if (j/cell? params) @params params))]])))]
      (s/pagination
        (page-link "Previous" (hfn #(max 1 (dec %)) page) false true (cell= (= 1 page)))
        (page-link "1" (hfn (fn [x] 1) page) false (cell= (not= page 1)))

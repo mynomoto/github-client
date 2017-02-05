@@ -40,3 +40,10 @@ You need boot installed and then run:
 [hoplon]: https://hoplon.io
 [re-frame]: https://github.com/Day8/re-frame
 [benefactor]: https://github.com/mynomoto/benefactor
+
+## License
+
+Copyright © 2016-2017 Marcelo Nomoto
+
+Distributed under the Eclipse Public License either version 1.0 or (at
+your option) any later version.
