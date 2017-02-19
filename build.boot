@@ -34,7 +34,8 @@
 
                   [benefactor "0.0.1-SNAPSHOT"]
                   ;; Better devtools for Clojurescript
-                  [binaryage/devtools "0.8.3" :scope "compile"]
+                  [binaryage/devtools "0.9.1" :scope "compile"]
+                  [binaryage/dirac "1.1.4" :scope "compile"]
                   [powerlaces/boot-cljs-devtools "0.1.3-SNAPSHOT" :scope "compile"]
 
                   ;; Create static site and upload to S3
@@ -76,7 +77,7 @@
   '[crisptrutski.boot-cljs-test :refer [test-cljs]]
   '[org.martinklepsch.boot-gzip :refer [gzip]]
   '[tailrecursion.boot-static :refer [serve]]
-  '[powerlaces.boot-cljs-devtools :refer [cljs-devtools]])
+  '[powerlaces.boot-cljs-devtools :refer [cljs-devtools dirac]])
 
 (defn- last-commit*
   []
@@ -99,6 +100,7 @@
     (watch)
     (speak)
     (cljs-devtools)
+    (dirac)
     (cljs-repl) ; do not change the order!
     (reload :on-jsload 'github-client.reload/on-js-reload)
     (cljs

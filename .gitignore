@@ -2,3 +2,4 @@
 .nrepl-*
 .repl-*
 target/
+out/
